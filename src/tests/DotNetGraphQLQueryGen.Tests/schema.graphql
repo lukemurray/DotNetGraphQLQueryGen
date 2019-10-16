@@ -1,0 +1,102 @@
+schema {
+    query: RootQuery
+    mutation: Mutation
+}
+
+scalar Date
+
+type RootQuery {
+	"Pagination. [defaults: page = 1, pagesize = 10]"
+	actorPager(page: Int, pagesize: Int, search: String): PersonPagination
+	"List of actors"
+	actors: [Person]
+	"List of directors"
+	directors: [Person]
+	"Return a Movie by its Id"
+	movie(id: Int!): Movie
+	"Collection of Movies"
+	movies: [Movie]
+	"Collection of Peoples"
+	people: [Person]
+	"Return a Person by its Id"
+	person(id: Int!): Person
+	"List of writers"
+	writers: [Person]
+
+}
+
+type SubscriptionType {
+	name: String
+}
+
+"""
+This is a movie entity
+"""
+type Movie {
+	id: Int
+	name: String
+	"Enum of Genre"
+	genre: Int
+	released: Date
+	"Actors in the movie"
+	actors: [Person]
+	"Writers in the movie"
+	writers: [Person]
+	director: Person
+	directorId: Int
+	rating: Float
+}
+
+type Actor {
+	personId: Int
+	person: Person
+	movieId: Int
+	movie: Movie
+}
+
+type Person {
+	id: Int
+	firstName: String
+	lastName: String
+	dob: Date
+	"Movies they acted in"
+	actorIn: [Movie]
+	"Movies they wrote"
+	writerOf: [Movie]
+	directorOf: [Movie]
+	died: Date
+	isDeleted: Boolean
+	"Show the person's age"
+	age: Int
+	"Person's name"
+	name: String
+}
+
+type Writer {
+	personId: Int
+	person: Person
+	movieId: Int
+	movie: Movie
+}
+
+type PersonPagination {
+	"total records to match search"
+	total: Int
+	"total pages based on page size"
+	pageCount: Int
+	"collection of people"
+	people: [Person]
+}
+
+input Detail {
+	description: String
+}
+
+
+type Mutation {
+	"Add a new Movie object"
+	addMovie(name: String!, rating: Float, details: [Detail], genre: Int, released: Date): Movie
+	addActor(firstName: String, lastName: String, movieId: Int): Person
+	addActor2(firstName: String, lastName: String, movieId: Int): Person
+
+}

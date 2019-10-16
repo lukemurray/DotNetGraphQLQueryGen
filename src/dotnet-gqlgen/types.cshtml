@@ -1,0 +1,88 @@
+@{
+    DisableEncoding = true;
+}
+@using dotnet_gqlgen;
+
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using DotNetGqlClient;
+
+/// <summary>
+/// Generated interfaces for making GraphQL API calls with a typed interface.
+///
+/// Generated on @DateTime.Now from @Model.SchemaFile
+/// </summary>
+
+namespace @Model.Namespace
+{
+
+@foreach(var gqlType in Model.Types.Values)
+{
+    if (!string.IsNullOrEmpty(gqlType.Description))
+    {
+    @:/// <summary>
+    @:/// @gqlType.Description
+    @:/// </summary>
+    }
+    if (gqlType.IsInput)
+    {
+    @:public class @gqlType.Name
+    }
+    else
+    {
+    @:public interface @gqlType.Name
+    }
+    @:{
+@foreach(var field in gqlType.Fields)
+{
+    @if (field.ShouldBeProperty || gqlType.IsInput)
+    {
+        @if (!string.IsNullOrEmpty(field.Description))
+        {
+        @:/// <summary>
+        @:/// @field.Description
+        @:/// </summary>
+        }
+        @:[GqlFieldName("@field.Name")]
+        if (gqlType.IsInput)
+        {
+        @:public @field.DotNetType @field.DotNetName { get; set; }
+        }
+        else
+        {
+        @:@field.DotNetType @field.DotNetName { get; }
+        }
+    }
+    else
+    {
+        if (gqlType != Model.Mutation)
+        {
+        @:/// <summary>
+        @if (!string.IsNullOrEmpty(field.Description))
+        {
+        @:/// @field.Description
+        @:///
+        }
+        @:/// This shortcut will return a selection of all fields
+        @:/// </summary>
+        @:[GqlFieldName("@field.Name")]
+        @:@field.DotNetType @(field.DotNetName)();
+        }
+
+        @:/// <summary>
+        @if (!string.IsNullOrEmpty(field.Description))
+        {
+        @:/// @field.Description
+        @:///
+        }
+        @:/// </summary>
+        @:/// <param name="selection">Projection of fields to select from the object</param>
+        @:[GqlFieldName("@field.Name")]
+        @(field.IsArray ? "        List<TReturn>" : "        TReturn") @:@field.DotNetName<TReturn>(@(field.ArgsOutput())@(field.Args.Count == 0 ? "" : ", ")Expression<Func<@field.DotNetTypeSingle, TReturn>> selection);
+    }
+}
+    @:}
+}
+
+}
