@@ -27,6 +27,7 @@ namespace dotnet_gqlgen
             Schema = new List<Field>();
             Types = new Dictionary<string, TypeInfo>();
             Inputs = new Dictionary<string, TypeInfo>();
+            Scalars = new List<string>();
         }
 
         public List<Field> Schema { get; }
@@ -49,6 +50,7 @@ namespace dotnet_gqlgen
         }
         public Dictionary<string, TypeInfo> Types { get; }
         public Dictionary<string, TypeInfo> Inputs { get; }
+        public List<string> Scalars { get; }
 
         internal bool HasDotNetType(string typeName)
         {
@@ -121,7 +123,7 @@ namespace dotnet_gqlgen
         {
             get
             {
-                return Args.Count == 0 && !schemaInfo.Types.ContainsKey(TypeName) && !schemaInfo.Inputs.ContainsKey(TypeName);
+                return (Args.Count == 0 && !schemaInfo.Types.ContainsKey(TypeName) && !schemaInfo.Inputs.ContainsKey(TypeName)) || schemaInfo.Scalars.Contains(TypeName);
             }
         }
 
@@ -129,7 +131,7 @@ namespace dotnet_gqlgen
         {
             if (!Args.Any())
                 return "";
-            return string.Join(", ", Args.Select(a => $"{(a.ShouldBeProperty ? a.DotNetType + ((a.Required || a.DotNetType == "string" || a.IsArray) ? "" : "?") : a.DotNetType)} {a.Name}"));
+            return string.Join(", ", Args.Select(a => $"{(a.ShouldBeProperty ? a.DotNetType + ((a.Required || a.DotNetType == "string" || a.IsArray || schemaInfo.Inputs.ContainsKey(a.TypeName)) ? "" : "?") : a.DotNetType)} {a.Name}"));
         }
 
         public override string ToString()

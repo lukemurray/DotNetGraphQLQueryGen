@@ -57,7 +57,8 @@ namespace dotnet_gqlgen
                     Namespace = Namespace,
                     SchemaFile = SchemaFile,
                     Types = allTypes,
-                    Mutation = typeInfo.Mutation
+                    Mutation = typeInfo.Mutation,
+                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping}"
                 });
                 Directory.CreateDirectory(OutputDir);
                 File.WriteAllText($"{OutputDir}/GeneratedTypes.cs", result);

@@ -114,6 +114,7 @@ namespace dotnet_gqlgen
         public override object VisitScalarDef(GraphQLSchemaParser.ScalarDefContext context)
         {
             var result = base.VisitScalarDef(context);
+            schemaInfo.Scalars.Add(context.typeName.Text);
             return result;
         }
     }
