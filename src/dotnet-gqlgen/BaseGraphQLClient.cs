@@ -17,23 +17,37 @@ namespace DotNetGqlClient
             if (query.NodeType != ExpressionType.Lambda)
                 throw new ArgumentException($"Must provide a LambdaExpression", "query");
             var lambda = (LambdaExpression)query;
-            if (lambda.Body.NodeType != ExpressionType.New)
-                throw new ArgumentException($"LambdaExpression must return a NewExpression");
 
-            var newExp = (NewExpression)lambda.Body;
+            if (lambda.Body.NodeType != ExpressionType.New && lambda.Body.NodeType != ExpressionType.MemberInit)
+                throw new ArgumentException($"LambdaExpression must return a NewExpression or MemberInitExpression");
 
-            GetObjectSelection(gql, newExp);
+            GetObjectSelection(gql, lambda.Body);
+
             gql.Append(@"}");
             return gql.ToString();
         }
 
-        private static void GetObjectSelection(StringBuilder gql, NewExpression newExp)
+        private static void GetObjectSelection(StringBuilder gql, Expression exp)
         {
-            for (int i = 0; i < newExp.Arguments.Count; i++)
+            if (exp.NodeType == ExpressionType.New)
             {
-                var fieldVal = newExp.Arguments[i];
-                var fieldProp = newExp.Members[i];
-                gql.AppendLine($"{fieldProp.Name}: {GetFieldSelection(fieldVal)}");
+                var newExp = (NewExpression)exp;
+                for (int i = 0; i < newExp.Arguments.Count; i++)
+                {
+                    var fieldVal = newExp.Arguments[i];
+                    var fieldProp = newExp.Members[i];
+                    gql.AppendLine($"{fieldProp.Name}: {GetFieldSelection(fieldVal)}");
+                }
+            }
+            else
+            {
+                var mi = (MemberInitExpression)exp;
+                for (int i = 0; i < mi.Bindings.Count; i++)
+                {
+                    var valExp = ((MemberAssignment)mi.Bindings[i]).Expression;
+                    var fieldVal = mi.Bindings[i].Member;
+                    gql.AppendLine($"{mi.Bindings[i].Member.Name}: {GetFieldSelection(valExp)}");
+                }
             }
         }
 
@@ -113,7 +127,7 @@ namespace DotNetGqlClient
                     exp = ((UnaryExpression)exp).Operand;
                 if (exp.NodeType == ExpressionType.Lambda)
                     exp = ((LambdaExpression)exp).Body;
-                GetObjectSelection(select, (NewExpression)exp);
+                GetObjectSelection(select, exp);
             }
             select.Append("}");
             return select.ToString();

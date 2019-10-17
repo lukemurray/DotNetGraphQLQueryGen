@@ -37,10 +37,8 @@ namespace @Model.Namespace
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<GqlResult<TQuery>> QueryAsync<TQuery>(Expression<Func<@Model.Query.Name, TQuery>> query)
+        private async Task<GqlResult<TQuery>> ProcessResult<TQuery>(string gql)
         {
-            var gql = base.MakeQuery<@Model.Query.Name, TQuery>(query);
-
             // gql is a GraphQL doc e.g. { query MyQuery { stuff { id name } } }
             // you can replace the following with what ever HTTP library you use
             // don't forget to implement your authentication if required
@@ -61,28 +59,16 @@ namespace @Model.Namespace
             return data;
         }
 
+        public async Task<GqlResult<TQuery>> QueryAsync<TQuery>(Expression<Func<@Model.Query.Name, TQuery>> query)
+        {
+            var gql = base.MakeQuery<@Model.Query.Name, TQuery>(query);
+            return await ProcessResult<TQuery>(gql);
+        }
+
         public async Task<GqlResult<TQuery>> MutateAsync<TQuery>(Expression<Func<@Model.Mutation.Name, TQuery>> query)
         {
             var gql = base.MakeQuery<@Model.Mutation.Name, TQuery>(query, true);
-
-            // gql is a GraphQL doc e.g. { query MyQuery { stuff { id name } } }
-            // you can replace the following with what ever HTTP library you use
-            // don't forget to implement your authentication if required
-            var req = new HttpRequestMessage {
-                RequestUri = this.apiUrl,
-                Method = HttpMethod.Post,
-            };
-            var queryReq = new
-            {
-                Query = gql.ToString()
-            };
-            req.Content = new StringContent(JsonConvert.SerializeObject(queryReq), Encoding.UTF8, "application/json");
-            // you will need to implement any auth
-            // req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var res = await client.SendAsync(req);
-            var strResult = await res.Content.ReadAsStringAsync();
-            var data = JsonConvert.DeserializeObject<GqlResult<TQuery>>(strResult);
-            return data;
+            return await ProcessResult<TQuery>(gql);
         }
     }
 

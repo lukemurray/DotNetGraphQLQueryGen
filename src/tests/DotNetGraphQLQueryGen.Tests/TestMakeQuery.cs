@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using DotNetGqlClient;
 using Generated;
@@ -7,11 +8,11 @@ using Xunit.Abstractions;
 
 namespace CoreData.Model.Tests
 {
-    public class TestClient : BaseGraphQLClient<RootQuery>
+    public class TestClient : BaseGraphQLClient
     {
         internal string Make<TReturn>(Expression<Func<RootQuery, TReturn>> p)
         {
-            return base.MakeQuery<TReturn>(p);
+            return base.MakeQuery(p);
         }
     }
 
@@ -61,5 +62,33 @@ Rating: rating
 }}
 }}".Replace("\r\n", "\n"), query);
         }
+
+        [Fact]
+        public void TypedClass()
+        {
+            var client = new TestClient();
+            var query = client.Make(q => new MyResult
+            {
+                Movies = q.Movies(s => new MovieResult
+                {
+                    Id = s.Id,
+                }),
+            });
+            Assert.Equal($@"query BaseGraphQLClient {{
+Movies: movies {{
+Id: id
+}}
+}}".Replace("\r\n", "\n"), query);
+        }
+    }
+
+    public class MovieResult
+    {
+        public int Id { get; set; }
+    }
+
+    public class MyResult
+    {
+        public List<MovieResult> Movies { get; set; }
     }
 }

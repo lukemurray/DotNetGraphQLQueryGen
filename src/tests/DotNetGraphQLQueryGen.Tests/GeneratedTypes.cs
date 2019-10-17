@@ -7,7 +7,7 @@ using DotNetGqlClient;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on 10/10/19 4:49:07 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql
+/// Generated on 16/10/19 3:20:40 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql
 /// </summary>
 
 namespace Generated
@@ -25,8 +25,8 @@ namespace Generated
         /// <summary>
         /// Pagination [defaults: page  , pagesize  ]
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("actorPager")]
         TReturn ActorPager<TReturn>(int? page, int? pagesize, string search, Expression<Func<PersonPagination, TReturn>> selection);
         /// <summary>
@@ -39,8 +39,8 @@ namespace Generated
         /// <summary>
         /// List of actors
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("actors")]
         List<TReturn> Actors<TReturn>(Expression<Func<Person, TReturn>> selection);
         /// <summary>
@@ -53,8 +53,8 @@ namespace Generated
         /// <summary>
         /// List of directors
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("directors")]
         List<TReturn> Directors<TReturn>(Expression<Func<Person, TReturn>> selection);
         /// <summary>
@@ -67,8 +67,8 @@ namespace Generated
         /// <summary>
         /// Return a Movie by its Id
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("movie")]
         TReturn Movie<TReturn>(int id, Expression<Func<Movie, TReturn>> selection);
         /// <summary>
@@ -81,8 +81,8 @@ namespace Generated
         /// <summary>
         /// Collection of Movies
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("movies")]
         List<TReturn> Movies<TReturn>(Expression<Func<Movie, TReturn>> selection);
         /// <summary>
@@ -95,8 +95,8 @@ namespace Generated
         /// <summary>
         /// Collection of Peoples
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("people")]
         List<TReturn> People<TReturn>(Expression<Func<Person, TReturn>> selection);
         /// <summary>
@@ -109,8 +109,8 @@ namespace Generated
         /// <summary>
         /// Return a Person by its Id
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("person")]
         TReturn Person<TReturn>(int id, Expression<Func<Person, TReturn>> selection);
         /// <summary>
@@ -123,8 +123,8 @@ namespace Generated
         /// <summary>
         /// List of writers
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("writers")]
         List<TReturn> Writers<TReturn>(Expression<Func<Person, TReturn>> selection);
     }
@@ -159,8 +159,8 @@ namespace Generated
         /// <summary>
         /// Actors in the movie
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("actors")]
         List<TReturn> Actors<TReturn>(Expression<Func<Person, TReturn>> selection);
         /// <summary>
@@ -173,8 +173,8 @@ namespace Generated
         /// <summary>
         /// Writers in the movie
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("writers")]
         List<TReturn> Writers<TReturn>(Expression<Func<Person, TReturn>> selection);
         /// <summary>
@@ -183,8 +183,8 @@ namespace Generated
         [GqlFieldName("director")]
         Person Director();
         /// <summary>
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("director")]
         TReturn Director<TReturn>(Expression<Func<Person, TReturn>> selection);
         [GqlFieldName("directorId")]
@@ -202,8 +202,8 @@ namespace Generated
         [GqlFieldName("person")]
         Person Person();
         /// <summary>
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("person")]
         TReturn Person<TReturn>(Expression<Func<Person, TReturn>> selection);
         [GqlFieldName("movieId")]
@@ -214,8 +214,8 @@ namespace Generated
         [GqlFieldName("movie")]
         Movie Movie();
         /// <summary>
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("movie")]
         TReturn Movie<TReturn>(Expression<Func<Movie, TReturn>> selection);
     }
@@ -239,8 +239,8 @@ namespace Generated
         /// <summary>
         /// Movies they acted in
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("actorIn")]
         List<TReturn> ActorIn<TReturn>(Expression<Func<Movie, TReturn>> selection);
         /// <summary>
@@ -253,8 +253,8 @@ namespace Generated
         /// <summary>
         /// Movies they wrote
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("writerOf")]
         List<TReturn> WriterOf<TReturn>(Expression<Func<Movie, TReturn>> selection);
         /// <summary>
@@ -263,8 +263,8 @@ namespace Generated
         [GqlFieldName("directorOf")]
         List<Movie> DirectorOf();
         /// <summary>
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("directorOf")]
         List<TReturn> DirectorOf<TReturn>(Expression<Func<Movie, TReturn>> selection);
         [GqlFieldName("died")]
@@ -292,8 +292,8 @@ namespace Generated
         [GqlFieldName("person")]
         Person Person();
         /// <summary>
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("person")]
         TReturn Person<TReturn>(Expression<Func<Person, TReturn>> selection);
         [GqlFieldName("movieId")]
@@ -304,8 +304,8 @@ namespace Generated
         [GqlFieldName("movie")]
         Movie Movie();
         /// <summary>
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("movie")]
         TReturn Movie<TReturn>(Expression<Func<Movie, TReturn>> selection);
     }
@@ -331,8 +331,8 @@ namespace Generated
         /// <summary>
         /// collection of people
         ///
-        /// This allows selection of just the fields you require
         /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("people")]
         List<TReturn> People<TReturn>(Expression<Func<Person, TReturn>> selection);
     }
@@ -341,42 +341,25 @@ namespace Generated
         /// <summary>
         /// Add a new Movie object
         ///
-        /// This shortcut will return a selection of all fields
         /// </summary>
-        [GqlFieldName("addMovie")]
-        Movie AddMovie();
-        /// <summary>
-        /// Add a new Movie object
-        ///
-        /// This allows selection of just the fields you require
-        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("addMovie")]
         TReturn AddMovie<TReturn>(string name, double? rating, List<Detail> details, int? genre, DateTime? released, Expression<Func<Movie, TReturn>> selection);
         /// <summary>
-        /// This shortcut will return a selection of all fields
         /// </summary>
-        [GqlFieldName("addActor")]
-        Person AddActor();
-        /// <summary>
-        /// This allows selection of just the fields you require
-        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("addActor")]
         TReturn AddActor<TReturn>(string firstName, string lastName, int? movieId, Expression<Func<Person, TReturn>> selection);
         /// <summary>
-        /// This shortcut will return a selection of all fields
         /// </summary>
-        [GqlFieldName("addActor2")]
-        Person AddActor2();
-        /// <summary>
-        /// This allows selection of just the fields you require
-        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("addActor2")]
         TReturn AddActor2<TReturn>(string firstName, string lastName, int? movieId, Expression<Func<Person, TReturn>> selection);
     }
-    public interface Detail
+    public class Detail
     {
         [GqlFieldName("description")]
-        string Description { get; }
+        public string Description { get; set; }
     }
 
 }
