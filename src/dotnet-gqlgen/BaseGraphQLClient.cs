@@ -93,16 +93,52 @@ namespace DotNetGqlClient
                 {
                     var arg = call.Arguments.ElementAt(i);
                     var param = call.Method.GetParameters().ElementAt(i);
-                    var constArg = (ConstantExpression)arg;
-                    if (constArg.Value == null)
-                        continue;
-                    if (constArg.Type == typeof(string) || constArg.Type == typeof(Guid))
+                    Type argType = null;
+                    object argVal = null;
+                    if (arg.NodeType == ExpressionType.Convert)
                     {
-                        argVals.Add($"{param.Name}: \"{constArg.Value}\"");
+                        arg = ((UnaryExpression)arg).Operand;
+                    }
+
+                    if (arg.NodeType == ExpressionType.Constant)
+                    {
+                        var constArg = (ConstantExpression)arg;
+                        argType = constArg.Type;
+                        argVal = constArg.Value;
+                    }
+                    else if (arg.NodeType == ExpressionType.MemberAccess)
+                    {
+                        var ma = (MemberExpression)arg;
+                        var ce = (ConstantExpression)ma.Expression;
+                        argType = ma.Type;
+                        if (ma.Member.MemberType == MemberTypes.Field)
+                            argVal = ((FieldInfo)ma.Member).GetValue(ce.Value);
+                        else
+                            argVal = ((PropertyInfo)ma.Member).GetValue(ce.Value);
+                    }
+                    else if (arg.NodeType == ExpressionType.New)
+                    {
+                        argVal = Expression.Lambda(arg).Compile().DynamicInvoke();
+                        argType = argVal.GetType();
+                    }
+
+                    else
+                    {
+                        throw new Exception($"Unsupported argument type {arg.NodeType}");
+                    }
+                    if (argVal == null)
+                        continue;
+                    if (argType == typeof(string) || argType == typeof(Guid) || argType == typeof(Guid?))
+                    {
+                        argVals.Add($"{param.Name}: \"{argVal}\"");
+                    }
+                    else if (argType == typeof(DateTime) || argType == typeof(DateTime?))
+                    {
+                        argVals.Add($"{param.Name}: \"{((DateTime)argVal).ToString("o")}\"");
                     }
                     else
                     {
-                        argVals.Add($"{param.Name}: {constArg.Value}");
+                        argVals.Add($"{param.Name}: {argVal}");
                     }
                 };
                 if (argVals.Any())

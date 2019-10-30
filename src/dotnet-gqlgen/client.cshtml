@@ -19,9 +19,13 @@ using Newtonsoft.Json;
 
 namespace @Model.Namespace
 {
+    public class GqlError
+    {
+        public string Message { get; set; }
+    }
     public class GqlResult<TQuery>
     {
-        public List<string> Errors { get; set; }
+        public List<GqlError> Errors { get; set; }
         public TQuery Data { get; set; }
     }
 
