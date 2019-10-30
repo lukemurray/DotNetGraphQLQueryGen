@@ -16,7 +16,7 @@ enumItem    : comment* NAME;
 arguments   : ws* argument (ws* ','* ws* argument)*;
 argument    : NAME ws* ':' ws* dataType required='!'?;
 
-dataType    : (NAME | '[' NAME ']');
+dataType    : (NAME '!'? | '[' NAME '!'? ']');
 NAME        : [a-z_A-Z] [a-z_A-Z0-9-]*;
 
 comment     : ws* (('"' ~('\n'|'\r')* '"') | ('"""' ~'"""'* '"""') | ('#' ~('\n'|'\r')*)) ws*;

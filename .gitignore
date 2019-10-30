@@ -4,6 +4,7 @@ package-lock.json
 .idea/
 obj/
 .DS_Store
+.antlr/
 
 # User-specific files
 *.suo

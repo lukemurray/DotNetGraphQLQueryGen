@@ -12,6 +12,11 @@ namespace dotnet_gqlgen
             {"Int", "int"},
             {"Float", "double"},
             {"Boolean", "bool"},
+            {"String!", "string"},
+            {"ID!", "string"},
+            {"Int!", "int"},
+            {"Float!", "double"},
+            {"Boolean!", "bool"},
         };
 
         public SchemaInfo(Dictionary<string, string> typeMappings)
@@ -131,7 +136,7 @@ namespace dotnet_gqlgen
         {
             if (!Args.Any())
                 return "";
-            return string.Join(", ", Args.Select(a => $"{(a.ShouldBeProperty ? a.DotNetType + ((a.Required || a.DotNetType == "string" || a.IsArray || schemaInfo.Inputs.ContainsKey(a.TypeName)) ? "" : "?") : a.DotNetType)} {a.Name}"));
+            return string.Join(", ", Args.Select(a => $"{(a.ShouldBeProperty ? a.DotNetType : a.DotNetType)} {a.Name}"));
         }
 
         public override string ToString()
