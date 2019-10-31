@@ -9,9 +9,9 @@ namespace dotnet_gqlgen
         public Dictionary<string, string> typeMappings = new Dictionary<string, string> {
             {"String", "string"},
             {"ID", "string"},
-            {"Int", "int"},
-            {"Float", "double"},
-            {"Boolean", "bool"},
+            {"Int", "int?"},
+            {"Float", "double?"},
+            {"Boolean", "bool?"},
             {"String!", "string"},
             {"ID!", "string"},
             {"Int!", "int"},
@@ -136,7 +136,7 @@ namespace dotnet_gqlgen
         {
             if (!Args.Any())
                 return "";
-            return string.Join(", ", Args.Select(a => $"{(a.ShouldBeProperty ? a.DotNetType : a.DotNetType)} {a.Name}"));
+            return string.Join(", ", Args.Select(a => $"{a.DotNetType} {a.Name}"));
         }
 
         public override string ToString()
