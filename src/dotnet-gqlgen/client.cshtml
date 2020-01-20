@@ -41,6 +41,18 @@ namespace @Model.Namespace
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
+        public @(Model.ClientClassName)(HttpClient client)
+            : this(client.BaseAddress, client)
+        {
+        }
+
+        public @(Model.ClientClassName)(Uri apiUrl, HttpClient client)
+        {
+            this.apiUrl = apiUrl;
+            this.client = client;
+            this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
         private async Task<GqlResult<TQuery>> ProcessResult<TQuery>(string gql)
         {
             // gql is a GraphQL doc e.g. { query MyQuery { stuff { id name } } }
