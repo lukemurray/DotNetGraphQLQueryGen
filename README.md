@@ -6,6 +6,7 @@ Example, given the following GraphQL schema
 ```
 schema {
     query: Query
+    mutation: Mutation
 }
 
 scalar Date
@@ -37,6 +38,10 @@ type Person {
 	died: Date
 	age: Int
 	name: String
+}
+
+type Mutation {
+    addPerson(dob: Date!, name: String!): Person
 }
 ```
 
@@ -121,6 +126,12 @@ public interface Person
     [GqlFieldName("name")]
     string Name { get; }
 }
+
+public interface Mutation
+{
+    [GqlFieldName("addPerson")]
+    TReturn AddPerson<TReturn>(DateTime dob, string name, Expression<Func<Person, TReturn>> selection);
+}
 ```
 
 It also generates a `GraphQLClient` class that will work for an unauthenticated API. You can modify that class to implement the authentication you may need. `GraphQLClient` exposes 2 methods, `async Task<GqlResult<TQuery>> QueryAsync<TQuery>(Expression<Func<RootQuery, TQuery>> query)` for queries and `async Task<GqlResult<TQuery>> MutateAsync<TQuery>(Expression<Func<Mutation, TQuery>> query)` for mutations.
@@ -168,5 +179,22 @@ The GraphQL created by the above will look like this
     }
 }
 ```
+
+## Mutations
+
+Mutations look very similar to the above query, just as they do in GraphQL. The above schema had one mutation that can be called like so
+
+```c#
+// mutations
+var mutationResult = await client.MutateAsync(m => new {
+    NewPerson = m.AddPerson(new DateTime(1801, 7, 3), "John Johny", p => new { p.Id })
+});
+```
+
+`m` is the `Mutation` type interface and lets you call any of the mutations generated from the schema. Like a query, you create a new anaoymous object and call as many mutations as you wish. Each mutation method has all their arguments and the last one is a selection query on the mutation's return type.
+
+The above has `mutationResult` strongly typed. E.g. `mutationResult.Data.NewPerson` will only have an `Id` field.
+
+## Input types
 
 Any input types are generated as actual `class`es as the are used as arguments. The `-m Date=DateTime` tells the tool that the `scalar` type `Date` should be the `DateTime` type in C#. You can use this to support any other custom `scalar` types. E.g. `-m Date=DateTime,Point=PointF`, just comma seperate a `GqlScalar=DotnetType` list.
