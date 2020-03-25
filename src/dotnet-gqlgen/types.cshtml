@@ -17,6 +17,16 @@ using DotNetGqlClient;
 namespace @Model.Namespace
 {
 
+@foreach(var kvp in Model.Enums)
+{
+    @:public enum @kvp.Key {
+        @foreach(var field in kvp.Value)
+        {
+            @:@field,
+        }
+    @:}
+}
+
 @foreach(var gqlType in Model.Types.Values)
 {
     if (!string.IsNullOrEmpty(gqlType.Description))

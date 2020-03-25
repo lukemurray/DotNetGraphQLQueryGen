@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQLSchema.Grammer;
@@ -24,14 +23,13 @@ namespace dotnet_gqlgen
             var desc = docComment != null ? (string)VisitComment(docComment) : null;
             var name = context.name.Text;
             var args = (List<Arg>)VisitArguments(context.args);
-            var type = context.type.GetText();
-            var isArray = type[0] == '[';
-            type = type.Trim('[', ']');
+            var type = context.type.type?.Text;
+            var arrayType = context.type.arrayType?.Text;
             addFieldsTo.Add(new Field(this.schemaInfo)
             {
                 Name = name,
-                TypeName = type,
-                IsArray = isArray,
+                TypeName = arrayType ?? type,
+                IsArray = context.type.arrayType != null,
                 Args = args,
                 Description = desc,
             });
@@ -45,15 +43,14 @@ namespace dotnet_gqlgen
             {
                 foreach (var arg in context.argument())
                 {
-                    var type = arg.dataType().GetText();
-                    var isArray = type[0] == '[';
-                    type = type.Trim('[', ']');
+                    var type = arg.dataType().type?.Text;
+                    var arrayType = arg.dataType().arrayType?.Text;
                     args.Add(new Arg(this.schemaInfo)
                     {
                         Name = arg.NAME().GetText(),
-                        TypeName = type,
+                        TypeName = arrayType ?? type,
                         Required = arg.required != null,
-                        IsArray = isArray
+                        IsArray = arrayType != null
                     });
                 }
             }
@@ -82,8 +79,22 @@ namespace dotnet_gqlgen
             var docComment = context.comment().LastOrDefault();
             var desc = docComment != null ? (string)VisitComment(docComment) : null;
 
-            var result = base.VisitEnumDef(context);
-            return result;
+            var fields = new List<Field>();
+            using (new FieldConsumer(this, fields))
+            {
+                var result = base.VisitEnumDef(context);
+                schemaInfo.Enums.Add(context.typeName.Text, fields.Select(f => f.Name).ToList());
+                return result;
+            }
+        }
+        public override object VisitEnumItem(GraphQLSchemaParser.EnumItemContext context)
+        {
+            this.addFieldsTo.Add(new Field(this.schemaInfo) {
+                Name = context.name.Text,
+                Args = new List<Arg>(),
+                IsEnum = true
+            });
+            return base.VisitEnumItem(context);
         }
         public override object VisitInputDef(GraphQLSchemaParser.InputDefContext context)
         {

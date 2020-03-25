@@ -57,6 +57,7 @@ namespace dotnet_gqlgen
                     Namespace = Namespace,
                     SchemaFile = SchemaFile,
                     Types = allTypes,
+                    Enums = typeInfo.Enums,
                     Mutation = typeInfo.Mutation,
                     CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping}"
                 });

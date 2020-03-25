@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,6 +31,7 @@ namespace dotnet_gqlgen
             Schema = new List<Field>();
             Types = new Dictionary<string, TypeInfo>();
             Inputs = new Dictionary<string, TypeInfo>();
+            Enums = new Dictionary<string, List<string>>();
             Scalars = new List<string>();
         }
 
@@ -40,6 +40,7 @@ namespace dotnet_gqlgen
         /// Return the query type info.
         /// </summary>
         public TypeInfo Query => Types[Schema.First(f => f.Name == "query").TypeName];
+
         /// <summary>
         /// Return the mutation type info.
         /// </summary>
@@ -55,11 +56,12 @@ namespace dotnet_gqlgen
         }
         public Dictionary<string, TypeInfo> Types { get; }
         public Dictionary<string, TypeInfo> Inputs { get; }
+        public Dictionary<string, List<string>> Enums { get; set; }
         public List<string> Scalars { get; }
 
         internal bool HasDotNetType(string typeName)
         {
-            return typeMappings.ContainsKey(typeName) || Types.ContainsKey(typeName) || Inputs.ContainsKey(typeName);
+            return typeMappings.ContainsKey(typeName) || Types.ContainsKey(typeName) || Inputs.ContainsKey(typeName) || Enums.ContainsKey(typeName);
         }
 
         internal string GetDotNetType(string typeName)
@@ -68,6 +70,8 @@ namespace dotnet_gqlgen
                 return typeMappings[typeName];
             if (Types.ContainsKey(typeName))
                 return Types[typeName].Name;
+            if (Enums.ContainsKey(typeName))
+                return typeName;
             return Inputs[typeName].Name;
         }
     }
@@ -97,7 +101,7 @@ namespace dotnet_gqlgen
             Args = new List<Arg>();
             this.schemaInfo = schemaInfo;
         }
-
+        public bool IsEnum { get; set; }
         public string Name { get; set; }
         public string TypeName { get; set; }
         public bool IsArray { get; set; }
