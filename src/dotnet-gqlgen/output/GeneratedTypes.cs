@@ -7,11 +7,69 @@ using DotNetGqlClient;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on 31/10/19 9:43:34 am from ../../../../../xysense/xynger/src/Web/XyAdmin/src/app/queryTypes/schema.graphql with arguments -n Generated -c GraphQLClient -m Date=DateTime?,Date!=DateTime,ID=Guid?,ID!=Guid
+/// Generated on 25/3/20 1:18:08 pm from ../../../../../xysense/xynger/src/Web/XyAdmin/src/app/generated/admin.graphql with arguments -n Generated -c GraphQLClient -m Date=DateTime?,Date!=DateTime,ID=Guid?,ID!=Guid,Point=PointInput
 /// </summary>
 
 namespace Generated
 {
+
+    public enum SensorStatus {
+            Installing,
+            Active,
+            Off,
+    }
+    public enum SensorCoverageType {
+            Workstation,
+            Breakout,
+            MeetingRoom,
+            Mixed,
+            Other,
+            PhoneBooth,
+            Project,
+            Corridor,
+            FocusRoom,
+            CollaborationArea,
+            MeetingRoomSmall,
+            MeetingRoomMedium,
+            MeetingRoomLarge,
+            RemoveSensor,
+            AddSensor,
+    }
+    public enum QuoteArchiveReason {
+            DealWon,
+            DealLost,
+            Other,
+    }
+    public enum SpaceGroupType {
+            Neighborhood,
+    }
+    public enum AuditAction {
+            Add,
+            Update,
+            Delete,
+    }
+    public enum OccupancyStatus {
+            Unknown,
+            CurrentlyOccupied,
+            RecentlyOccupied,
+            NotOccupied,
+    }
+    public enum AccessClaim {
+            ViewAnalytics,
+            ViewLive,
+            ViewLocations,
+            ReadPublicApi,
+            EditSpaces,
+            Installer,
+            CustomerAdmin,
+            XySuperAdmin,
+            XyImpersonateCustomer,
+            XyManageCustomers,
+            XyViewLive,
+            XyManageHardware,
+            XyManageUsers,
+            XyReadPublicApi,
+    }
 
     public interface RootQuery
     {
@@ -72,6 +130,30 @@ namespace Generated
         [GqlFieldName("cameraModules")]
         List<TReturn> CameraModules<TReturn>(string search, int? limit, Expression<Func<CameraModule, TReturn>> selection);
         /// <summary>
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("countries")]
+        List<Country> Countries();
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("countries")]
+        List<TReturn> Countries<TReturn>(Expression<Func<Country, TReturn>> selection);
+        /// <summary>
+        /// Return a Country by its Id
+        ///
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("country")]
+        Country Country();
+        /// <summary>
+        /// Return a Country by its Id
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("country")]
+        TReturn Country<TReturn>(Guid id, Expression<Func<Country, TReturn>> selection);
+        /// <summary>
         /// Return a Customer by its Id
         ///
         /// This shortcut will return a selection of all fields
@@ -86,19 +168,19 @@ namespace Generated
         [GqlFieldName("customer")]
         TReturn Customer<TReturn>(Guid id, Expression<Func<Customer, TReturn>> selection);
         /// <summary>
-        /// Return a list of active Customers
+        /// Return a list of active Customers Allowing filtering by name
         ///
         /// This shortcut will return a selection of all fields
         /// </summary>
         [GqlFieldName("customers")]
         List<Customer> Customers();
         /// <summary>
-        /// Return a list of active Customers
+        /// Return a list of active Customers Allowing filtering by name
         ///
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("customers")]
-        List<TReturn> Customers<TReturn>(Expression<Func<Customer, TReturn>> selection);
+        List<TReturn> Customers<TReturn>(string like, Expression<Func<Customer, TReturn>> selection);
         [GqlFieldName("dateRangeQueryingEnabled")]
         bool DateRangeQueryingEnabled { get; }
         /// <summary>
@@ -144,6 +226,30 @@ namespace Generated
         [GqlFieldName("floor")]
         TReturn Floor<TReturn>(Guid id, Expression<Func<Floor, TReturn>> selection);
         /// <summary>
+        /// Return a FloorActiveDate by its Id
+        ///
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("floorActiveDate")]
+        FloorActiveDate FloorActiveDate();
+        /// <summary>
+        /// Return a FloorActiveDate by its Id
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("floorActiveDate")]
+        TReturn FloorActiveDate<TReturn>(Guid id, Expression<Func<FloorActiveDate, TReturn>> selection);
+        /// <summary>
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("floorActiveDates")]
+        List<FloorActiveDate> FloorActiveDates();
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("floorActiveDates")]
+        List<TReturn> FloorActiveDates<TReturn>(Expression<Func<FloorActiveDate, TReturn>> selection);
+        /// <summary>
         /// Return a FloorPlan by its Id
         ///
         /// This shortcut will return a selection of all fields
@@ -168,19 +274,19 @@ namespace Generated
         [GqlFieldName("floorPlans")]
         List<TReturn> FloorPlans<TReturn>(Expression<Func<FloorPlan, TReturn>> selection);
         /// <summary>
-        /// Return a list of active floors optionally filtered by a EQL expression
+        /// Return a list of active floors optionally filtered by a EQL expression, list of IDs or a search string
         ///
         /// This shortcut will return a selection of all fields
         /// </summary>
         [GqlFieldName("floors")]
         List<Floor> Floors();
         /// <summary>
-        /// Return a list of active floors optionally filtered by a EQL expression
+        /// Return a list of active floors optionally filtered by a EQL expression, list of IDs or a search string
         ///
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("floors")]
-        List<TReturn> Floors<TReturn>(string filter, Expression<Func<Floor, TReturn>> selection);
+        List<TReturn> Floors<TReturn>(string filter, string like, List<Guid?> ids, Guid? customerId, Expression<Func<Floor, TReturn>> selection);
         /// <summary>
         /// Return a FloorSpace by its Id
         ///
@@ -262,19 +368,19 @@ namespace Generated
         [GqlFieldName("location")]
         TReturn Location<TReturn>(Guid id, Expression<Func<Location, TReturn>> selection);
         /// <summary>
-        /// Return a list of active locations optionally filtered by name
+        /// Return a list of active locations optionally filtered by name andor customer Id
         ///
         /// This shortcut will return a selection of all fields
         /// </summary>
         [GqlFieldName("locations")]
         List<Location> Locations();
         /// <summary>
-        /// Return a list of active locations optionally filtered by name
+        /// Return a list of active locations optionally filtered by name andor customer Id
         ///
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("locations")]
-        List<TReturn> Locations<TReturn>(string nameLike, Expression<Func<Location, TReturn>> selection);
+        List<TReturn> Locations<TReturn>(string nameLike, Guid? customerId, Expression<Func<Location, TReturn>> selection);
         /// <summary>
         /// Return a Quote by its Id
         ///
@@ -396,7 +502,7 @@ namespace Generated
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("sensorInstallations")]
-        List<TReturn> SensorInstallations<TReturn>(string status, string search, Guid? floorId, Expression<Func<SensorInstallation, TReturn>> selection);
+        List<TReturn> SensorInstallations<TReturn>(SensorStatus status, string search, Guid? floorId, Expression<Func<SensorInstallation, TReturn>> selection);
         /// <summary>
         /// Return a list of active Sensors
         ///
@@ -496,6 +602,30 @@ namespace Generated
         [GqlFieldName("spaceTypes")]
         List<TReturn> SpaceTypes<TReturn>(string nameLike, Expression<Func<SpaceType, TReturn>> selection);
         /// <summary>
+        /// Return a State by its Id
+        ///
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("state")]
+        State State();
+        /// <summary>
+        /// Return a State by its Id
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("state")]
+        TReturn State<TReturn>(Guid id, Expression<Func<State, TReturn>> selection);
+        /// <summary>
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("states")]
+        List<State> States();
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("states")]
+        List<TReturn> States<TReturn>(Expression<Func<State, TReturn>> selection);
+        /// <summary>
         /// Return a list of uninstalled sensors optionally filtered by serial number, SIM, board serial number, camera serial number or lens calibration name and limited in number returned
         ///
         /// This shortcut will return a selection of all fields
@@ -565,7 +695,24 @@ namespace Generated
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("usedDetexyBoards")]
         List<TReturn> UsedDetexyBoards<TReturn>(string serialNumber, Expression<Func<DetexyBoard, TReturn>> selection);
+        /// <summary>
+        /// Return a list of application users
+        ///
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("users")]
+        List<User> Users();
+        /// <summary>
+        /// Return a list of application users
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("users")]
+        List<TReturn> Users<TReturn>(Expression<Func<User, TReturn>> selection);
     }
+    /// <summary>
+    /// Information about subscriptions
+    /// </summary>
     public interface SubscriptionType
     {
         [GqlFieldName("name")]
@@ -624,6 +771,26 @@ namespace Generated
         /// </summary>
         [GqlFieldName("totalActiveSensors")]
         int TotalActiveSensors { get; }
+        /// <summary>
+        /// Return count of sensors that are installed with the customer that may still need configuring
+        /// </summary>
+        [GqlFieldName("totalPlacedSensors")]
+        int TotalPlacedSensors { get; }
+        /// <summary>
+        /// Return count of floors customer has (not including quotes)
+        /// </summary>
+        [GqlFieldName("totalFloors")]
+        int TotalFloors { get; }
+        /// <summary>
+        /// Total number of sensors installed with the customer
+        /// </summary>
+        [GqlFieldName("totalSensors")]
+        int TotalSensors { get; }
+        /// <summary>
+        /// Total number of locations
+        /// </summary>
+        [GqlFieldName("totalLocations")]
+        int TotalLocations { get; }
     }
     public interface Floor
     {
@@ -748,7 +915,7 @@ namespace Generated
         /// Current floorplan scale
         /// </summary>
         [GqlFieldName("scale")]
-        double Scale { get; }
+        double? Scale { get; }
         /// <summary>
         /// Total number of sensors on the floor
         /// </summary>
@@ -783,6 +950,16 @@ namespace Generated
         [GqlFieldName("spaceGroups")]
         List<TReturn> SpaceGroups<TReturn>(Expression<Func<SpaceGroup, TReturn>> selection);
         /// <summary>
+        /// Count of spaces on the floor
+        /// </summary>
+        [GqlFieldName("totalSpaces")]
+        int TotalSpaces { get; }
+        /// <summary>
+        /// Count of space groups on the floor
+        /// </summary>
+        [GqlFieldName("totalSpaceGroups")]
+        int TotalSpaceGroups { get; }
+        /// <summary>
         /// Return only sensors that are active for tracking on the floor
         ///
         /// This shortcut will return a selection of all fields
@@ -801,6 +978,11 @@ namespace Generated
         /// </summary>
         [GqlFieldName("totalActiveSensors")]
         int TotalActiveSensors { get; }
+        /// <summary>
+        /// Return count of sensors that are installed on the floor that may still need configuring
+        /// </summary>
+        [GqlFieldName("totalPlacedSensors")]
+        int TotalPlacedSensors { get; }
         /// <summary>
         /// All key dates impacting the floor for space groups
         /// </summary>
@@ -832,7 +1014,7 @@ namespace Generated
         [GqlFieldName("floor")]
         TReturn Floor<TReturn>(Expression<Func<Floor, TReturn>> selection);
         [GqlFieldName("scale")]
-        double Scale { get; }
+        double? Scale { get; }
         [GqlFieldName("floorplanBytes")]
         string FloorplanBytes { get; }
         /// <summary>
@@ -847,6 +1029,10 @@ namespace Generated
         TReturn Customer<TReturn>(Expression<Func<Customer, TReturn>> selection);
         [GqlFieldName("customerId")]
         Guid CustomerId { get; }
+        [GqlFieldName("widthPixels")]
+        int WidthPixels { get; }
+        [GqlFieldName("heightPixels")]
+        int HeightPixels { get; }
         [GqlFieldName("id")]
         Guid Id { get; }
         [GqlFieldName("startDate")]
@@ -865,6 +1051,32 @@ namespace Generated
         [GqlFieldName("address")]
         string Address { get; }
         /// <summary>
+        /// List of floors at this location
+        ///
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("floors")]
+        List<Floor> Floors();
+        /// <summary>
+        /// List of floors at this location
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("floors")]
+        List<TReturn> Floors<TReturn>(Expression<Func<Floor, TReturn>> selection);
+        [GqlFieldName("stateId")]
+        Guid StateId { get; }
+        /// <summary>
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("state")]
+        State State();
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("state")]
+        TReturn State<TReturn>(Expression<Func<State, TReturn>> selection);
+        /// <summary>
         /// This shortcut will return a selection of all fields
         /// </summary>
         [GqlFieldName("customer")]
@@ -877,9 +1089,9 @@ namespace Generated
         [GqlFieldName("customerId")]
         Guid CustomerId { get; }
         [GqlFieldName("latitude")]
-        string Latitude { get; }
+        double? Latitude { get; }
         [GqlFieldName("longitude")]
-        string Longitude { get; }
+        double? Longitude { get; }
         [GqlFieldName("id")]
         Guid Id { get; }
         [GqlFieldName("created")]
@@ -902,6 +1114,65 @@ namespace Generated
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("timezone")]
         TReturn Timezone<TReturn>(Expression<Func<TimeZone, TReturn>> selection);
+        /// <summary>
+        /// The country the location is located in
+        ///
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("country")]
+        Country Country();
+        /// <summary>
+        /// The country the location is located in
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("country")]
+        TReturn Country<TReturn>(Expression<Func<Country, TReturn>> selection);
+        /// <summary>
+        /// Count of total active floors
+        /// </summary>
+        [GqlFieldName("totalFloors")]
+        int TotalFloors { get; }
+    }
+    public interface State
+    {
+        [GqlFieldName("id")]
+        Guid Id { get; }
+        [GqlFieldName("name")]
+        string Name { get; }
+        [GqlFieldName("abbreviation")]
+        string Abbreviation { get; }
+        [GqlFieldName("countryId")]
+        Guid CountryId { get; }
+        /// <summary>
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("country")]
+        Country Country();
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("country")]
+        TReturn Country<TReturn>(Expression<Func<Country, TReturn>> selection);
+    }
+    public interface Country
+    {
+        [GqlFieldName("id")]
+        Guid Id { get; }
+        [GqlFieldName("name")]
+        string Name { get; }
+        [GqlFieldName("abbreviation")]
+        string Abbreviation { get; }
+        /// <summary>
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("states")]
+        List<State> States();
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("states")]
+        List<TReturn> States<TReturn>(Expression<Func<State, TReturn>> selection);
     }
     public interface SensorInstallation
     {
@@ -942,17 +1213,17 @@ namespace Generated
         [GqlFieldName("customer")]
         TReturn Customer<TReturn>(Expression<Func<Customer, TReturn>> selection);
         [GqlFieldName("floorLocation")]
-        Point FloorLocation { get; }
+        PointInput FloorLocation { get; }
         [GqlFieldName("installedHeightInCm")]
-        double InstalledHeightInCm { get; }
+        double? InstalledHeightInCm { get; }
         [GqlFieldName("orientationAngleInRadians")]
-        double OrientationAngleInRadians { get; }
+        double? OrientationAngleInRadians { get; }
         [GqlFieldName("status")]
-        int? Status { get; }
+        SensorStatus Status { get; }
         [GqlFieldName("sensorCoverageType")]
-        string SensorCoverageType { get; }
+        SensorCoverageType SensorCoverageType { get; }
         [GqlFieldName("geofence")]
-        List<Point> Geofence { get; }
+        List<PointInput> Geofence { get; }
         [GqlFieldName("id")]
         Guid Id { get; }
         [GqlFieldName("startDate")]
@@ -1042,7 +1313,7 @@ namespace Generated
         [GqlFieldName("serialNumber")]
         string SerialNumber { get; }
         [GqlFieldName("lensCenterPoint")]
-        Point LensCenterPoint { get; }
+        PointInput LensCenterPoint { get; }
         [GqlFieldName("lensCalibrationId")]
         Guid LensCalibrationId { get; }
         /// <summary>
@@ -1081,15 +1352,15 @@ namespace Generated
         [GqlFieldName("antiDistortionCoefficients")]
         List<double> AntiDistortionCoefficients { get; }
         [GqlFieldName("focalLengthX")]
-        double FocalLengthX { get; }
+        double? FocalLengthX { get; }
         [GqlFieldName("focalLengthY")]
-        double FocalLengthY { get; }
+        double? FocalLengthY { get; }
         [GqlFieldName("calibrationResolutionWidth")]
         int CalibrationResolutionWidth { get; }
         [GqlFieldName("calibrationResolutionHeight")]
         int CalibrationResolutionHeight { get; }
         [GqlFieldName("maxRadiusInFisheyeCalibrationPixels")]
-        double MaxRadiusInFisheyeCalibrationPixels { get; }
+        double? MaxRadiusInFisheyeCalibrationPixels { get; }
         [GqlFieldName("detexyUsableRadiusInCalibrationPixels")]
         int DetexyUsableRadiusInCalibrationPixels { get; }
         [GqlFieldName("isDefault")]
@@ -1185,9 +1456,9 @@ namespace Generated
         [GqlFieldName("customer")]
         TReturn Customer<TReturn>(Expression<Func<Customer, TReturn>> selection);
         [GqlFieldName("floorLocation")]
-        Point FloorLocation { get; }
+        PointInput FloorLocation { get; }
         [GqlFieldName("sensorCoverageType")]
-        string SensorCoverageType { get; }
+        SensorCoverageType SensorCoverageType { get; }
         [GqlFieldName("notes")]
         string Notes { get; }
         [GqlFieldName("id")]
@@ -1230,9 +1501,11 @@ namespace Generated
         [GqlFieldName("floors")]
         List<TReturn> Floors<TReturn>(Expression<Func<Floor, TReturn>> selection);
         [GqlFieldName("areaPerSensor")]
-        double AreaPerSensor { get; }
+        double? AreaPerSensor { get; }
         [GqlFieldName("notes")]
         string Notes { get; }
+        [GqlFieldName("archiveReason")]
+        QuoteArchiveReason ArchiveReason { get; }
         [GqlFieldName("id")]
         Guid Id { get; }
         [GqlFieldName("created")]
@@ -1273,6 +1546,20 @@ namespace Generated
         [GqlFieldName("customer")]
         TReturn Customer<TReturn>(Expression<Func<Customer, TReturn>> selection);
         /// <summary>
+        /// Latest Occupancy information for a Space
+        ///
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("latestOccupancy")]
+        occupancy LatestOccupancy();
+        /// <summary>
+        /// Latest Occupancy information for a Space
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("latestOccupancy")]
+        TReturn LatestOccupancy<TReturn>(Expression<Func<occupancy, TReturn>> selection);
+        /// <summary>
         /// This shortcut will return a selection of all fields
         /// </summary>
         [GqlFieldName("spaceType")]
@@ -1285,7 +1572,7 @@ namespace Generated
         [GqlFieldName("spaceTypeId")]
         Guid SpaceTypeId { get; }
         [GqlFieldName("shape")]
-        List<Point> Shape { get; }
+        List<PointInput> Shape { get; }
         [GqlFieldName("shapeJson")]
         string ShapeJson { get; }
         [GqlFieldName("id")]
@@ -1385,7 +1672,7 @@ namespace Generated
         [GqlFieldName("customer")]
         TReturn Customer<TReturn>(Expression<Func<Customer, TReturn>> selection);
         [GqlFieldName("type")]
-        int? Type { get; }
+        SpaceGroupType Type { get; }
         /// <summary>
         /// Total number of spaces assigned to this group
         /// </summary>
@@ -1467,6 +1754,41 @@ namespace Generated
         [GqlFieldName("deleted")]
         DateTime Deleted { get; }
     }
+    public interface FloorActiveDate
+    {
+        [GqlFieldName("id")]
+        Guid Id { get; }
+        [GqlFieldName("customerId")]
+        Guid CustomerId { get; }
+        /// <summary>
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("customer")]
+        Customer Customer();
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("customer")]
+        TReturn Customer<TReturn>(Expression<Func<Customer, TReturn>> selection);
+        [GqlFieldName("floorId")]
+        Guid FloorId { get; }
+        /// <summary>
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("floor")]
+        Floor Floor();
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("floor")]
+        TReturn Floor<TReturn>(Expression<Func<Floor, TReturn>> selection);
+        [GqlFieldName("localDate")]
+        DateTime LocalDate { get; }
+        [GqlFieldName("localHourStart")]
+        int LocalHourStart { get; }
+        [GqlFieldName("localHourEnd")]
+        int LocalHourEnd { get; }
+    }
     public interface Audit
     {
         [GqlFieldName("id")]
@@ -1480,7 +1802,7 @@ namespace Generated
         [GqlFieldName("tableName")]
         string TableName { get; }
         [GqlFieldName("action")]
-        int? Action { get; }
+        AuditAction Action { get; }
         [GqlFieldName("keyValues")]
         string KeyValues { get; }
         [GqlFieldName("oldValues")]
@@ -1488,6 +1810,9 @@ namespace Generated
         [GqlFieldName("newValues")]
         string NewValues { get; }
     }
+    /// <summary>
+    /// Contains stats about the number of hardware modules we have installed etc
+    /// </summary>
     public interface HardwareStats
     {
         [GqlFieldName("totalSensors")]
@@ -1505,6 +1830,9 @@ namespace Generated
         [GqlFieldName("totalLensCalibrations")]
         int TotalLensCalibrations { get; }
     }
+    /// <summary>
+    /// Information about a time zone
+    /// </summary>
     public interface TimeZone
     {
         [GqlFieldName("countryCode")]
@@ -1518,15 +1846,65 @@ namespace Generated
         [GqlFieldName("gmtOffset")]
         int GmtOffset { get; }
         [GqlFieldName("zoneStart")]
-        int ZoneStart { get; }
+        int? ZoneStart { get; }
         [GqlFieldName("zoneEnd")]
-        int ZoneEnd { get; }
+        int? ZoneEnd { get; }
         [GqlFieldName("nextAbbreviation")]
         string NextAbbreviation { get; }
         [GqlFieldName("timestamp")]
-        int Timestamp { get; }
+        int? Timestamp { get; }
         [GqlFieldName("formatted")]
         string Formatted { get; }
+    }
+    /// <summary>
+    /// Latest Occupancy information for a Space
+    /// </summary>
+    public interface occupancy
+    {
+        [GqlFieldName("floorSpaceId")]
+        Guid FloorSpaceId { get; }
+        [GqlFieldName("occupancyStatus")]
+        OccupancyStatus OccupancyStatus { get; }
+        [GqlFieldName("headcount")]
+        int Headcount { get; }
+        [GqlFieldName("processedDate")]
+        DateTime ProcessedDate { get; }
+        [GqlFieldName("collectedDate")]
+        DateTime CollectedDate { get; }
+    }
+    /// <summary>
+    /// Information about users that have application access
+    /// </summary>
+    public interface User
+    {
+        [GqlFieldName("name")]
+        string Name { get; }
+        [GqlFieldName("email")]
+        string Email { get; }
+        [GqlFieldName("pictureUrl")]
+        string PictureUrl { get; }
+        [GqlFieldName("domain")]
+        string Domain { get; }
+        [GqlFieldName("id")]
+        string Id { get; }
+        [GqlFieldName("customerId")]
+        Guid? CustomerId { get; }
+        /// <summary>
+        /// Details of the customer the user belongs to
+        ///
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("customer")]
+        Customer Customer();
+        /// <summary>
+        /// Details of the customer the user belongs to
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("customer")]
+        TReturn Customer<TReturn>(Expression<Func<Customer, TReturn>> selection);
+        [GqlFieldName("accessClaims")]
+        List<AccessClaim> AccessClaims { get; }
     }
     public interface Mutation
     {
@@ -1534,21 +1912,26 @@ namespace Generated
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("addFloor")]
-        TReturn AddFloor<TReturn>(DateTime? currentDate, Guid? locationId, Guid? floorId, string base64Bytes, Guid? customerId, double? scale, Guid? quoteId, string name, int? sortSequence, Expression<Func<Floor, TReturn>> selection);
+        TReturn AddFloor<TReturn>(Guid? locationId, Guid? floorId, string base64Bytes, Guid? customerId, double? scale, Guid? quoteId, string name, int? sortSequence, DateTime? currentDate, Expression<Func<Floor, TReturn>> selection);
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("deleteFloor")]
+        TReturn DeleteFloor<TReturn>(Guid id, Expression<Func<Floor, TReturn>> selection);
         /// <summary>
         /// Add a new floor plan to a floor
         ///
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("addNewFloorPlan")]
-        TReturn AddNewFloorPlan<TReturn>(DateTime startDate, Guid floorId, string base64Bytes, double scale, Expression<Func<FloorPlan, TReturn>> selection);
+        TReturn AddNewFloorPlan<TReturn>(Guid floorId, string base64Bytes, double? scale, DateTime startDate, Expression<Func<FloorPlan, TReturn>> selection);
         /// <summary>
         /// Update the details of the current active floor plan (or the active floor plan at currentDate)
         ///
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("updateFloor")]
-        TReturn UpdateFloor<TReturn>(DateTime? currentDate, Guid? locationId, Guid? floorId, string base64Bytes, Guid? customerId, double? scale, Guid? quoteId, string name, int? sortSequence, Expression<Func<Floor, TReturn>> selection);
+        TReturn UpdateFloor<TReturn>(Guid? locationId, Guid? floorId, string base64Bytes, Guid? customerId, double? scale, Guid? quoteId, string name, int? sortSequence, DateTime? currentDate, Expression<Func<Floor, TReturn>> selection);
         /// <summary>
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
@@ -1558,15 +1941,17 @@ namespace Generated
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("addSpaceToFloor")]
-        TReturn AddSpaceToFloor<TReturn>(Guid floorId, string name, Guid spaceTypeId, List<Point> shape, DateTime? currentDate, Expression<Func<FloorSpace, TReturn>> selection);
+        TReturn AddSpaceToFloor<TReturn>(Guid floorId, string name, Guid spaceTypeId, List<PointInput> shape, DateTime? currentDate, Expression<Func<FloorSpace, TReturn>> selection);
         /// <summary>
         /// Update a mapped space area on a floor Any updates to a shape change the shape for the whole time it has existed (startDate) If you want to make end of life this shape Delete it and add a new shape
         ///
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("updateSpaceOnFloor")]
-        TReturn UpdateSpaceOnFloor<TReturn>(Guid id, string name, Guid? spaceTypeId, int? capacity, List<Point> shape, DateTime? updateFrom, Expression<Func<FloorSpace, TReturn>> selection);
+        TReturn UpdateSpaceOnFloor<TReturn>(Guid id, string name, Guid? spaceTypeId, int? capacity, List<PointInput> shape, DateTime? updateFrom, Expression<Func<FloorSpace, TReturn>> selection);
         /// <summary>
+        /// Remove a space from the floor
+        ///
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("removeSpaceOnFloor")]
@@ -1589,32 +1974,41 @@ namespace Generated
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("addSpacesToGroup")]
-        TReturn AddSpacesToGroup<TReturn>(Guid spaceGroupId, Guid floorId, List<Guid> spaceIds, DateTime currentDate, int? daysDuration, Expression<Func<SpaceGroup, TReturn>> selection);
+        TReturn AddSpacesToGroup<TReturn>(Guid spaceGroupId, Guid floorId, List<Guid?> spaceIds, DateTime currentDate, int? daysDuration, Expression<Func<SpaceGroup, TReturn>> selection);
         /// <summary>
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("removeSpaceGroup")]
         TReturn RemoveSpaceGroup<TReturn>(Guid spaceGroupId, DateTime dateEnd, Expression<Func<SpaceGroup, TReturn>> selection);
         /// <summary>
+        /// Add a new location, which is a building or site at an address
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("addLocation")]
+        TReturn AddLocation<TReturn>(Guid? customerId, string address, string name, Guid stateId, double? latitude, double? longitude, Expression<Func<Location, TReturn>> selection);
+        /// <summary>
+        /// Update an existing location, which is a building or site at an address
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("updateLocation")]
+        TReturn UpdateLocation<TReturn>(Guid id, string address, string name, Guid? stateId, double? latitude, double? longitude, Expression<Func<Location, TReturn>> selection);
+        /// <summary>
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("installSensor")]
-        TReturn InstallSensor<TReturn>(string serialNumber, Guid floorId, double x, double y, double installedHeightInCm, int sensorCoverageType, Expression<Func<SensorInstallation, TReturn>> selection);
+        TReturn InstallSensor<TReturn>(string serialNumber, Guid floorId, double? x, double? y, double? installedHeightInCm, int? sensorCoverageType, Expression<Func<SensorInstallation, TReturn>> selection);
         /// <summary>
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("updateSensorInstallation")]
-        TReturn UpdateSensorInstallation<TReturn>(Guid? sensorId, Point position, double? installedHeightInCm, double? orientationAngleInRadians, string sensorCoverageType, List<Point> geofence, bool removeGeofence, bool activate, bool deactivate, Expression<Func<SensorInstallation, TReturn>> selection);
+        TReturn UpdateSensorInstallation<TReturn>(Guid? sensorId, PointInput position, double? installedHeightInCm, double? orientationAngleInRadians, SensorCoverageType sensorCoverageType, List<PointInput> geofence, bool? removeGeofence, bool? activate, bool? deactivate, Expression<Func<SensorInstallation, TReturn>> selection);
         /// <summary>
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("deleteSensorInstallation")]
         TReturn DeleteSensorInstallation<TReturn>(Guid id, Expression<Func<SensorInstallation, TReturn>> selection);
-        /// <summary>
-        /// </summary>
-        /// <param name="selection">Projection of fields to select from the object</param>
-        [GqlFieldName("addLocation")]
-        TReturn AddLocation<TReturn>(Guid? customerId, string address, string name, Expression<Func<Location, TReturn>> selection);
         /// <summary>
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
@@ -1624,26 +2018,33 @@ namespace Generated
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("addQuote")]
-        TReturn AddQuote<TReturn>(Guid? quoteId, double? area, Guid customerId, string name, string notes, Expression<Func<Quote, TReturn>> selection);
+        TReturn AddQuote<TReturn>(Guid? quoteId, double? area, Guid? customerId, string name, string notes, Expression<Func<Quote, TReturn>> selection);
         /// <summary>
         /// Update the details of a Quote
         ///
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("updateQuote")]
-        TReturn UpdateQuote<TReturn>(Guid? quoteId, double? area, Guid customerId, string name, string notes, Expression<Func<Quote, TReturn>> selection);
+        TReturn UpdateQuote<TReturn>(Guid? quoteId, double? area, Guid? customerId, string name, string notes, Expression<Func<Quote, TReturn>> selection);
         /// <summary>
         /// Add a sensor to the quote
         ///
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("addSensorToQuote")]
-        TReturn AddSensorToQuote<TReturn>(Point location, Guid floorId, int? sensorCoverageType, Expression<Func<QuoteSensor, TReturn>> selection);
+        TReturn AddSensorToQuote<TReturn>(PointInput location, Guid floorId, SensorCoverageType sensorCoverageType, Expression<Func<QuoteSensor, TReturn>> selection);
+        /// <summary>
+        /// Delete the quote with a given reason
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("deleteQuote")]
+        TReturn DeleteQuote<TReturn>(Guid id, QuoteArchiveReason archiveReason, Expression<Func<Quote, TReturn>> selection);
         /// <summary>
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("updateQuoteSensor")]
-        TReturn UpdateQuoteSensor<TReturn>(Guid id, Point position, Expression<Func<QuoteSensor, TReturn>> selection);
+        TReturn UpdateQuoteSensor<TReturn>(Guid id, PointInput position, Expression<Func<QuoteSensor, TReturn>> selection);
         /// <summary>
         /// Remove a sensor from a Quote Removes the SensorInstallation and Sensor objects
         ///
@@ -1651,6 +2052,13 @@ namespace Generated
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("deleteQuoteSensor")]
         TReturn DeleteQuoteSensor<TReturn>(Guid id, Expression<Func<QuoteSensor, TReturn>> selection);
+        /// <summary>
+        /// Copy quote floors to a real floor with place holders for the sensors, ready for installation and configuration
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("createFloorsForInstall")]
+        TReturn CreateFloorsForInstall<TReturn>(List<Guid?> floorIds, Expression<Func<Floor, TReturn>> selection);
         /// <summary>
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
@@ -1698,14 +2106,74 @@ namespace Generated
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("updateFloorProcessed")]
         TReturn UpdateFloorProcessed<TReturn>(Guid floorId, DateTime lastProcessedAnalytics, Expression<Func<Floor, TReturn>> selection);
+        /// <summary>
+        /// Add and invite a user to the application with a set of permissions
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("addUser")]
+        TReturn AddUser<TReturn>(string email, string name, List<AccessClaim> claims, string pictureUrl, Guid? customerId, Expression<Func<User, TReturn>> selection);
+        /// <summary>
+        /// Edit a user attributes and permissions
+        ///
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("editUser")]
+        TReturn EditUser<TReturn>(string id, string email, string name, List<AccessClaim> claims, string pictureUrl, Guid? customerId, Expression<Func<User, TReturn>> selection);
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("addCountry")]
+        TReturn AddCountry<TReturn>(string name, string abbreviation, Expression<Func<Country, TReturn>> selection);
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("editCountry")]
+        TReturn EditCountry<TReturn>(Guid id, string name, string abbreviation, Expression<Func<Country, TReturn>> selection);
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("deleteCountry")]
+        TReturn DeleteCountry<TReturn>(Guid id, Expression<Func<Country, TReturn>> selection);
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("addState")]
+        TReturn AddState<TReturn>(Guid country, string name, string abbreviation, Expression<Func<State, TReturn>> selection);
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("editState")]
+        TReturn EditState<TReturn>(Guid country, string name, string abbreviation, Expression<Func<State, TReturn>> selection);
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("deleteState")]
+        TReturn DeleteState<TReturn>(Guid id, Expression<Func<State, TReturn>> selection);
     }
-    public class Point
+    /// <summary>
+    /// Represents a point in D space (x,y)
+    /// </summary>
+    public class PointInput
     {
         [GqlFieldName("x")]
-        public double X { get; set; }
+        public double? X { get; set; }
         [GqlFieldName("y")]
-        public double Y { get; set; }
+        public double? Y { get; set; }
     }
+    /// <summary>
+    /// Width and height
+    /// </summary>
+    public class Size
+    {
+        [GqlFieldName("width")]
+        public int Width { get; set; }
+        [GqlFieldName("height")]
+        public int Height { get; set; }
+    }
+    /// <summary>
+    /// Arguments for the calibration input type
+    /// </summary>
     public class CalibrationArgs
     {
         [GqlFieldName("id")]
@@ -1715,9 +2183,9 @@ namespace Generated
         [GqlFieldName("antiDistortionCoefficients")]
         public List<double> AntiDistortionCoefficients { get; set; }
         [GqlFieldName("focalLengthX")]
-        public double FocalLengthX { get; set; }
+        public double? FocalLengthX { get; set; }
         [GqlFieldName("focalLengthY")]
-        public double FocalLengthY { get; set; }
+        public double? FocalLengthY { get; set; }
         [GqlFieldName("calibrationResolution")]
         public Size CalibrationResolution { get; set; }
         [GqlFieldName("maxRadiusInFisheyeCalibrationPixels")]
@@ -1727,6 +2195,9 @@ namespace Generated
         [GqlFieldName("detexyUsableRadiusInCalibrationPixels")]
         public int DetexyUsableRadiusInCalibrationPixels { get; set; }
     }
+    /// <summary>
+    /// Arguments for the camera module input type
+    /// </summary>
     public class CameraModuleArgs
     {
         [GqlFieldName("id")]
@@ -1734,16 +2205,9 @@ namespace Generated
         [GqlFieldName("serialNumber")]
         public string SerialNumber { get; set; }
         [GqlFieldName("lensCenter")]
-        public Point LensCenter { get; set; }
+        public PointInput LensCenter { get; set; }
         [GqlFieldName("lensCalibrationId")]
         public Guid LensCalibrationId { get; set; }
-    }
-    public class Size
-    {
-        [GqlFieldName("width")]
-        public int Width { get; set; }
-        [GqlFieldName("height")]
-        public int Height { get; set; }
     }
 
 }

@@ -105,6 +105,7 @@ namespace dotnet_gqlgen
         public string Name { get; set; }
         public string TypeName { get; set; }
         public bool IsArray { get; set; }
+        public bool IsNonNullable { get; set; }
         public List<Arg> Args { get; set; }
         public string Description { get; set; }
 
@@ -113,7 +114,10 @@ namespace dotnet_gqlgen
         {
             get
             {
-                return IsArray ? $"List<{DotNetTypeSingle}>" : DotNetTypeSingle;
+                var t = DotNetTypeSingle;
+                if (IsNonNullable)
+                    t = DotNetTypeSingle.Trim('?');
+                return IsArray ? $"List<{t}>" : t;
             }
         }
         public string DotNetTypeSingle
@@ -140,7 +144,7 @@ namespace dotnet_gqlgen
         {
             if (!Args.Any())
                 return "";
-            return string.Join(", ", Args.Select(a => $"{a.DotNetType} {a.Name}"));
+            return string.Join(", ", Args.Select(a => $"{(a.Required ? a.DotNetType.Trim('?') : a.DotNetType)} {a.Name}"));
         }
 
         public override string ToString()

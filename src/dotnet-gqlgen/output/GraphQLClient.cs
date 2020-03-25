@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on 31/10/19 9:43:34 am from ../../../../../xysense/xynger/src/Web/XyAdmin/src/app/queryTypes/schema.graphql
+/// Generated on 25/3/20 1:18:08 pm from ../../../../../xysense/xynger/src/Web/XyAdmin/src/app/generated/admin.graphql
 /// </summary>
 
 namespace Generated
@@ -35,6 +35,18 @@ namespace Generated
         {
             this.apiUrl = new Uri("");
             this.client = new HttpClient();
+            this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
+        public GraphQLClient(HttpClient client)
+            : this(client.BaseAddress, client)
+        {
+        }
+
+        public GraphQLClient(Uri apiUrl, HttpClient client)
+        {
+            this.apiUrl = apiUrl;
+            this.client = client;
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 

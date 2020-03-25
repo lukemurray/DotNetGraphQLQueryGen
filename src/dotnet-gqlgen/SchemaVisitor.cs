@@ -32,6 +32,7 @@ namespace dotnet_gqlgen
                 IsArray = context.type.arrayType != null,
                 Args = args,
                 Description = desc,
+                IsNonNullable = (context.type.elementTypeRequired ?? context.type.required) != null
             });
             return result;
         }
@@ -49,7 +50,7 @@ namespace dotnet_gqlgen
                     {
                         Name = arg.NAME().GetText(),
                         TypeName = arrayType ?? type,
-                        Required = arg.required != null,
+                        Required = (arg.dataType().arrayRequired ?? arg.dataType().required) != null,
                         IsArray = arrayType != null
                     });
                 }

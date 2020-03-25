@@ -14,9 +14,9 @@ objectDef   : '{' ws* fieldDef (ws* fieldDef)* ws* '}' ws*;
 fieldDef    : comment* name=NAME ('(' args=arguments ')')? ws* ':' ws* type=dataType;
 enumItem    : comment* name=NAME;
 arguments   : ws* argument (ws* ','* ws* argument)*;
-argument    : NAME ws* ':' ws* dataType required='!'?;
+argument    : NAME ws* ':' ws* dataType;
 
-dataType    : (type=NAME '!'? | '[' arrayType=NAME '!'? ']' '!'?);
+dataType    : (type=NAME required='!'? | '[' arrayType=NAME elementTypeRequired='!'? ']' arrayRequired='!'?);
 NAME        : [a-z_A-Z] [a-z_A-Z0-9-]*;
 
 comment     : ws* (('"' ~('\n'|'\r')* '"') | ('"""' ~'"""'* '"""') | ('#' ~('\n'|'\r')*)) ws*;
