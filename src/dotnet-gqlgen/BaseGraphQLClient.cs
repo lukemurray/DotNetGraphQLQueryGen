@@ -46,7 +46,7 @@ namespace DotNetGqlClient
                 {
                     var valExp = ((MemberAssignment)mi.Bindings[i]).Expression;
                     var fieldVal = mi.Bindings[i].Member;
-                    gql.AppendLine($"{mi.Bindings[i].Member.Name}: {GetFieldSelection(valExp)}");
+                    gql.AppendLine($"{fieldVal.Name}: {GetFieldSelection(valExp)}");
                 }
             }
         }
@@ -55,7 +55,22 @@ namespace DotNetGqlClient
         {
             if (field.NodeType == ExpressionType.MemberAccess)
             {
-                var member = ((MemberExpression)field).Member;
+                var memberExp = ((MemberExpression)field);
+                // we only support 1 level field selection as we are just generating gql not doing post processing
+                // e.g. client.MakeQuery(q => new
+                // {
+                //     Movie = q.Movies(s => new
+                //     {
+                //         s.Rating.Value,
+                //         s.Director().Died
+                //     }),
+                // });
+                // both of those selections are invalid. You just selection s.Rating and the return value type is float?
+                // and for the director died date you select it like gql s.Director(d => new { d.Died })
+                // TODO we could generate s.Director().Died into the line above
+                if (memberExp.Expression.NodeType != ExpressionType.Parameter)
+                    throw new ArgumentException("It looks like you are make a deep property call. We only support a single depth to generate GQL. You can use the methods to select nest objects");
+                var member = memberExp.Member;
                 var attribute = member.GetCustomAttributes(typeof(GqlFieldNameAttribute)).Cast<GqlFieldNameAttribute>().FirstOrDefault();
                 if (attribute != null)
                     return attribute.Name;

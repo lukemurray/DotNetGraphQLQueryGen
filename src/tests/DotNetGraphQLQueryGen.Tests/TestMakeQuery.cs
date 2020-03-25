@@ -102,6 +102,37 @@ Id: id
 }}
 }}".Replace("\r\n", "\n"), query);
         }
+
+        [Fact]
+        public void TestErrorOnInvalidPropertySelection()
+        {
+            Assert.Throws<ArgumentException>(() => {
+                var client = new TestClient();
+                var query = client.MakeQuery(q => new
+                {
+                    Movie = q.Movies(s => new
+                    {
+                        // we generate gql we don't select the .Value the value will be serialised in the object we're creating
+                        s.Rating.Value,
+                    }),
+                });
+            });
+        }
+        [Fact]
+        public void TestErrorOnInvalidPropertySelection2()
+        {
+            Assert.Throws<ArgumentException>(() => {
+                var client = new TestClient();
+                var query = client.MakeQuery(q => new
+                {
+                    Movie = q.Movies(s => new
+                    {
+                        // we generate gql we don't select the .Value the value will be serialised in the object we're creating
+                        s.Director().Died
+                    }),
+                });
+            });
+        }
     }
 
     public class MovieResult

@@ -33,63 +33,63 @@ type SubscriptionType {
 This is a movie entity
 """
 type Movie {
-	id: Int
-	name: String
+	id: Int!
+	name: String!
 	"Enum of Genre"
-	genre: Int
-	released: Date
+	genre: Int!
+	released: Date!
 	"Actors in the movie"
-	actors: [Person]
+	actors: [Person!]!
 	"Writers in the movie"
-	writers: [Person]
-	director: Person
-	directorId: Int
+	writers: [Person!]!
+	director: Person!
+	directorId: Int!
 	rating: Float
 }
 
 type Actor {
-	personId: Int
-	person: Person
-	movieId: Int
-	movie: Movie
+	personId: Int!
+	person: Person!
+	movieId: Int!
+	movie: Movie!
 }
 
 type Person {
-	id: Int
-	firstName: String
-	lastName: String
-	dob: Date
+	id: Int!
+	firstName: String!
+	lastName: String!
+	dob: Date!
 	"Movies they acted in"
 	actorIn: [Movie]
 	"Movies they wrote"
 	writerOf: [Movie]
 	directorOf: [Movie]
 	died: Date
-	isDeleted: Boolean
+	isDeleted: Boolean!
 	"Show the person's age"
-	age: Int
+	age: Int!
 	"Person's name"
-	name: String
+	name: String!
 }
 
 type Writer {
-	personId: Int
-	person: Person
-	movieId: Int
-	movie: Movie
+	personId: Int!
+	person: Person!
+	movieId: Int!
+	movie: Movie!
 }
 
 type PersonPagination {
 	"total records to match search"
-	total: Int
+	total: Int!
 	"total pages based on page size"
-	pageCount: Int
+	pageCount: Int!
 	"collection of people"
-	people: [Person]
+	people: [Person!]
 }
 
 input Detail {
-	description: String
+	description: String!
 }
 
 

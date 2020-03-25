@@ -7,11 +7,12 @@ using DotNetGqlClient;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on 16/10/19 3:20:40 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql
+/// Generated on 25/3/20 8:44:43 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql with arguments -n Generated -c TestClient -m Date=DateTime
 /// </summary>
 
 namespace Generated
 {
+
 
     public interface RootQuery
     {
@@ -190,7 +191,7 @@ namespace Generated
         [GqlFieldName("directorId")]
         int DirectorId { get; }
         [GqlFieldName("rating")]
-        double Rating { get; }
+        double? Rating { get; }
     }
     public interface Actor
     {
@@ -344,7 +345,7 @@ namespace Generated
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("addMovie")]
-        TReturn AddMovie<TReturn>(string name, double? rating, List<Detail> details, int? genre, DateTime? released, Expression<Func<Movie, TReturn>> selection);
+        TReturn AddMovie<TReturn>(string name, double? rating, List<Detail> details, int? genre, DateTime released, Expression<Func<Movie, TReturn>> selection);
         /// <summary>
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
