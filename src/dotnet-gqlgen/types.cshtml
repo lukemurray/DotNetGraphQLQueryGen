@@ -89,7 +89,7 @@ namespace @Model.Namespace
         @:/// </summary>
         @:/// <param name="selection">Projection of fields to select from the object</param>
         @:[GqlFieldName("@field.Name")]
-        @(field.IsArray ? "        List<TReturn>" : "        TReturn") @:@field.DotNetName<TReturn>(@(field.ArgsOutput())@(field.Args.Count == 0 ? "" : ", ")Expression<Func<@field.DotNetTypeSingle, TReturn>> selection);
+        @field.OutputMethodSig()
     }
 }
     @:}

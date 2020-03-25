@@ -93,7 +93,6 @@ namespace dotnet_gqlgen
             this.addFieldsTo.Add(new Field(this.schemaInfo) {
                 Name = context.name.Text,
                 Args = new List<Arg>(),
-                IsEnum = true
             });
             return base.VisitEnumItem(context);
         }

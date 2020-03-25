@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace dotnet_gqlgen
 {
@@ -74,6 +75,10 @@ namespace dotnet_gqlgen
                 return typeName;
             return Inputs[typeName].Name;
         }
+        internal bool IsEnum(string typeName)
+        {
+            return Enums.ContainsKey(typeName);
+        }
     }
 
     public class TypeInfo
@@ -101,7 +106,6 @@ namespace dotnet_gqlgen
             Args = new List<Arg>();
             this.schemaInfo = schemaInfo;
         }
-        public bool IsEnum { get; set; }
         public string Name { get; set; }
         public string TypeName { get; set; }
         public bool IsArray { get; set; }
@@ -116,7 +120,9 @@ namespace dotnet_gqlgen
             {
                 var t = DotNetTypeSingle;
                 if (IsNonNullable)
-                    t = DotNetTypeSingle.Trim('?');
+                    t = t.Trim('?');
+                else if (!t.EndsWith('?') && schemaInfo.IsEnum(t))
+                    t = t + "?";
                 return IsArray ? $"List<{t}>" : t;
             }
         }
@@ -140,11 +146,25 @@ namespace dotnet_gqlgen
             }
         }
 
+        public string OutputMethodSig()
+        {
+            var sb = new StringBuilder("        ");
+            sb.Append(IsArray ? "List<TReturn> " : "TReturn ");
+            sb.Append(DotNetName).Append("<TReturn>(");
+            sb.Append(ArgsOutput());
+            if (Args.Count > 0)
+                sb.Append(", ");
+            sb.AppendLine($"Expression<Func<{DotNetTypeSingle}, TReturn>> selection);");
+
+            return sb.ToString();
+        }
+
         public string ArgsOutput()
         {
             if (!Args.Any())
                 return "";
-            return string.Join(", ", Args.Select(a => $"{(a.Required ? a.DotNetType.Trim('?') : a.DotNetType)} {a.Name}"));
+            var result = string.Join(", ", Args.Select(a => $"{(a.Required ? a.DotNetType.Trim('?') : a.DotNetType)} {a.Name}"));
+            return result;
         }
 
         public override string ToString()
