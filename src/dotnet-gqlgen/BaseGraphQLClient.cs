@@ -55,7 +55,7 @@ namespace DotNetGqlClient
         {
             if (field.NodeType == ExpressionType.MemberAccess)
             {
-                var memberExp = ((MemberExpression)field);
+                var memberExp = (MemberExpression)field;
                 // we only support 1 level field selection as we are just generating gql not doing post processing
                 // e.g. client.MakeQuery(q => new
                 // {
