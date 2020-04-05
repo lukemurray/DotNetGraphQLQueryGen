@@ -123,7 +123,7 @@ namespace dotnet_gqlgen
                     t = t.Trim('?');
                 else if (!t.EndsWith('?') && schemaInfo.IsEnum(t))
                     t = t + "?";
-                return IsArray ? $"List<{t}>" : t;
+                return IsArray ? $"{t}[]" : t;
             }
         }
         public string DotNetTypeSingle
@@ -149,12 +149,12 @@ namespace dotnet_gqlgen
         public string OutputMethodSig()
         {
             var sb = new StringBuilder("        ");
-            sb.Append(IsArray ? "List<TReturn> " : "TReturn ");
+            sb.Append(IsArray ? "TReturn[] " : "TReturn ");
             sb.Append(DotNetName).Append("<TReturn>(");
             sb.Append(ArgsOutput());
             if (Args.Count > 0)
                 sb.Append(", ");
-            sb.AppendLine($"Expression<Func<{DotNetTypeSingle}, TReturn>> selection);");
+            sb.AppendLine($"Func<{DotNetTypeSingle}, TReturn> selection);");
 
             return sb.ToString();
         }

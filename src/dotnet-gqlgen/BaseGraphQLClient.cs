@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Globalization;
 
 namespace DotNetGqlClient
 {
@@ -110,63 +112,52 @@ namespace DotNetGqlClient
                     var param = call.Method.GetParameters().ElementAt(i);
                     Type argType = null;
                     object argVal = null;
+
                     if (arg.NodeType == ExpressionType.Convert)
                     {
                         arg = ((UnaryExpression)arg).Operand;
                     }
 
-                    if (arg.NodeType == ExpressionType.Constant)
+                    switch (arg.NodeType)
                     {
-                        var constArg = (ConstantExpression)arg;
-                        argType = constArg.Type;
-                        argVal = constArg.Value;
-                    }
-                    else if (arg.NodeType == ExpressionType.MemberAccess)
-                    {
-                        var ma = (MemberExpression)arg;
-                        var ce = (ConstantExpression)ma.Expression;
-                        argType = ma.Type;
-                        if (ma.Member.MemberType == MemberTypes.Field)
-                            argVal = ((FieldInfo)ma.Member).GetValue(ce.Value);
-                        else
-                            argVal = ((PropertyInfo)ma.Member).GetValue(ce.Value);
-                    }
-                    else if (arg.NodeType == ExpressionType.New)
-                    {
-                        argVal = Expression.Lambda(arg).Compile().DynamicInvoke();
-                        argType = argVal.GetType();
+                        case ExpressionType.Constant:
+                            var constArg = (ConstantExpression)arg;
+                            argType = constArg.Type;
+                            argVal = constArg.Value;
+                            break;
+                        case ExpressionType.MemberAccess:
+                            var ma = (MemberExpression)arg;
+                            var ce = (ConstantExpression)ma.Expression;
+                            argType = ma.Type;
+                            argVal = ma.Member.MemberType == MemberTypes.Field
+                                ? ((FieldInfo)ma.Member).GetValue(ce.Value)
+                                : ((PropertyInfo)ma.Member).GetValue(ce.Value);
+                            break;
+                        case ExpressionType.New:
+                        case ExpressionType.NewArrayInit:
+                            argVal = Expression.Lambda(arg).Compile().DynamicInvoke();
+                            argType = argVal.GetType();
+                            break;
+                        default:
+                            throw new Exception($"Unsupported argument type {arg.NodeType}");
                     }
 
-                    else
-                    {
-                        throw new Exception($"Unsupported argument type {arg.NodeType}");
-                    }
+
                     if (argVal == null)
                         continue;
-                    if (argType == typeof(string) || argType == typeof(Guid) || argType == typeof(Guid?))
-                    {
-                        argVals.Add($"{param.Name}: \"{argVal}\"");
-                    }
-                    else if (argType == typeof(DateTime) || argType == typeof(DateTime?))
-                    {
-                        argVals.Add($"{param.Name}: \"{(DateTime)argVal:o}\"");
-                    }
-                    else if (argType == typeof(double) || argType == typeof(float)) {
-                        argVals.Add($"{param.Name}: {((double)argVal).ToString(System.Globalization.CultureInfo.InvariantCulture)}");
-                    } else
-                    {
-                        argVals.Add($"{param.Name}: {argVal}");
-                    }
+
+                    argVals.Add($"{param.Name}: {ConstantToString(argVal, argType)}");
                 };
+
                 if (argVals.Any())
                     select.Append($"({string.Join(", ", argVals)})");
             }
             select.Append(" {" + Environment.NewLine);
             if (call.Arguments.Count == 0)
             {
-                if (call.Method.ReturnType.GetInterfaces().Select(i => i.GetTypeInfo().GetGenericTypeDefinition()).Contains(typeof(IEnumerable<>)))
+                if (call.Method.ReturnType.IsArray)
                 {
-                    select.Append(GetDefaultSelection(call.Method.ReturnType.GetGenericArguments().First()));
+                    select.Append(GetDefaultSelection(call.Method.ReturnType.GetElementType()));
                 }
                 else
                 {
@@ -184,6 +175,33 @@ namespace DotNetGqlClient
             }
             select.Append("}");
             return select.ToString();
+        }
+
+        private static string ConstantToString(object val, Type type)
+        {
+            type = Nullable.GetUnderlyingType(type) ?? type;
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.DateTime: return $"\"{(DateTime)val:o}\"";
+                case TypeCode.String: return $"\"{val}\"";
+                case TypeCode.Double: return ((double)val).ToString(CultureInfo.InvariantCulture);
+                case TypeCode.Decimal: return ((decimal)val).ToString(CultureInfo.InvariantCulture);
+                case TypeCode.Single: return ((float)val).ToString(CultureInfo.InvariantCulture);
+                case TypeCode.Boolean: return val.ToString().ToLower();
+                default:
+                    if (type == typeof(Guid))
+                    {
+                        return $"\"{val}\"";
+                    }
+                    else if (val is IEnumerable array)
+                    {
+                        return $"[{string.Join(',', array.Cast<object>().Select(i => ConstantToString(i, i.GetType())))}]";
+                    }
+                    else
+                    {
+                        return val.ToString();
+                    }
+            }
         }
 
         private static string GetDefaultSelection(Type returnType)

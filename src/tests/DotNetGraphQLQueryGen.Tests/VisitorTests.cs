@@ -29,9 +29,9 @@ namespace DotNetGraphQLQueryGen.Tests
             Assert.True(queryType.Fields.ElementAt(1).IsArray);
             Assert.Equal("person", queryType.Fields.ElementAt(6).Name);
             Assert.Equal("Person", queryType.Fields.ElementAt(6).TypeName);
-            Assert.False(queryType.Fields.ElementAt(6).IsArray);
+            Assert.True(queryType.Fields.ElementAt(6).IsArray);
             Assert.Single(queryType.Fields.ElementAt(6).Args);
-            Assert.Equal("id", queryType.Fields.ElementAt(6).Args.First().Name);
+            Assert.Equal("ids", queryType.Fields.ElementAt(6).Args.First().Name);
             Assert.Equal("Int", queryType.Fields.ElementAt(6).Args.First().TypeName);
             Assert.True(queryType.Fields.ElementAt(6).Args.First().Required);
         }

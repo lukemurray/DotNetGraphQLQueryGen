@@ -18,8 +18,8 @@ type RootQuery {
 	movies: [Movie]
 	"Collection of Peoples"
 	people: [Person]
-	"Return a Person by its Id"
-	person(id: Int!): Person
+	"Return Persons by they Ids"
+	person(ids: [Int]!): [Person]
 	"List of writers"
 	writers: [Person]
 
