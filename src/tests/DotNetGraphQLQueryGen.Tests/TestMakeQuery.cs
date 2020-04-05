@@ -8,6 +8,10 @@ using Xunit.Abstractions;
 
 namespace CoreData.Model.Tests
 {
+    public static class StringExtensions {
+        public static string ToUnix(this string value) => value.Replace("\r\n", "\n");
+    }
+
     public class TestClient : BaseGraphQLClient
     {
         internal string MakeQuery<TReturn>(Expression<Func<RootQuery, TReturn>> p, bool mutation = false)
@@ -39,7 +43,7 @@ namespace CoreData.Model.Tests
 Movies: movies {{
 Id: id
 }}
-}}".Replace("\r\n", "\n"), query);
+}}".ToUnix(), query.ToUnix());
         }
 
         [Fact]
@@ -64,7 +68,7 @@ DirectorId: directorId
 Rating: rating
 }}
 }}
-}}".Replace("\r\n", "\n"), query);
+}}".ToUnix(), query.ToUnix());
         }
 
         [Fact]
@@ -82,7 +86,7 @@ Rating: rating
 Movies: movies {{
 Id: id
 }}
-}}".Replace("\r\n", "\n"), query);
+}}".ToUnix(), query.ToUnix());
         }
 
         [Fact]
@@ -100,7 +104,7 @@ Id: id
 Movie: addMovie(name: ""movie"", rating: 5.5, released: ""2019-10-30T17:55:23.0000000"") {{
 Id: id
 }}
-}}".Replace("\r\n", "\n"), query);
+}}".ToUnix(), query.ToUnix());
         }
 
         [Fact]

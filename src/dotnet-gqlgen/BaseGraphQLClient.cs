@@ -149,9 +149,11 @@ namespace DotNetGqlClient
                     }
                     else if (argType == typeof(DateTime) || argType == typeof(DateTime?))
                     {
-                        argVals.Add($"{param.Name}: \"{((DateTime)argVal).ToString("o")}\"");
+                        argVals.Add($"{param.Name}: \"{(DateTime)argVal:o}\"");
                     }
-                    else
+                    else if (argType == typeof(double) || argType == typeof(float)) {
+                        argVals.Add($"{param.Name}: {((double)argVal).ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+                    } else
                     {
                         argVals.Add($"{param.Name}: {argVal}");
                     }
@@ -159,7 +161,7 @@ namespace DotNetGqlClient
                 if (argVals.Any())
                     select.Append($"({string.Join(", ", argVals)})");
             }
-            select.Append(" {\n");
+            select.Append(" {" + Environment.NewLine);
             if (call.Arguments.Count == 0)
             {
                 if (call.Method.ReturnType.GetInterfaces().Select(i => i.GetTypeInfo().GetGenericTypeDefinition()).Contains(typeof(IEnumerable<>)))
