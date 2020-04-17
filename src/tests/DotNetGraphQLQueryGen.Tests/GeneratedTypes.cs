@@ -7,7 +7,7 @@ using DotNetGqlClient;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on 25/3/20 8:44:43 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql with arguments -n Generated -c TestClient -m Date=DateTime
+/// Generated on 17/4/20 9:30:56 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql with arguments -n Generated -c TestHttpClient -m Date=DateTime
 /// </summary>
 
 namespace Generated
@@ -86,6 +86,16 @@ namespace Generated
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("movies")]
         List<TReturn> Movies<TReturn>(Expression<Func<Movie, TReturn>> selection);
+        /// <summary>
+        /// This shortcut will return a selection of all fields
+        /// </summary>
+        [GqlFieldName("moviesByIds")]
+        List<Movie> MoviesByIds();
+        /// <summary>
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("moviesByIds")]
+        List<TReturn> MoviesByIds<TReturn>(List<int?> ids, Expression<Func<Movie, TReturn>> selection);
         /// <summary>
         /// Collection of Peoples
         ///

@@ -36,6 +36,11 @@ namespace @Model.Namespace
 
         public @(Model.ClientClassName)()
         {
+            this.typeMappings = new Dictionary<string, string> {
+                @foreach(var kvp in Model.Mappings) {
+                    @:{ "@kvp.Key" , "@kvp.Value" },
+                }
+            };
             this.apiUrl = new Uri("");
             this.client = new HttpClient();
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -46,14 +51,14 @@ namespace @Model.Namespace
         {
         }
 
-        public @(Model.ClientClassName)(Uri apiUrl, HttpClient client)
+        public @(Model.ClientClassName)(Uri apiUrl, HttpClient client) : this()
         {
             this.apiUrl = apiUrl;
             this.client = client;
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        private async Task<GqlResult<TQuery>> ProcessResult<TQuery>(string gql)
+        protected virtual async Task<GqlResult<TQuery>> ProcessResult<TQuery>(QueryRequest gql)
         {
             // gql is a GraphQL doc e.g. { query MyQuery { stuff { id name } } }
             // you can replace the following with what ever HTTP library you use
@@ -62,11 +67,7 @@ namespace @Model.Namespace
                 RequestUri = this.apiUrl,
                 Method = HttpMethod.Post,
             };
-            var queryReq = new
-            {
-                Query = gql.ToString()
-            };
-            req.Content = new StringContent(JsonConvert.SerializeObject(queryReq), Encoding.UTF8, "application/json");
+            req.Content = new StringContent(JsonConvert.SerializeObject(gql), Encoding.UTF8, "application/json");
             // you will need to implement any auth
             // req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var res = await client.SendAsync(req);

@@ -16,6 +16,7 @@ type RootQuery {
 	movie(id: Int!): Movie
 	"Collection of Movies"
 	movies: [Movie]
+	moviesByIds(ids: [Int]!): [Movie]
 	"Collection of Peoples"
 	people: [Person]
 	"Return a Person by its Id"

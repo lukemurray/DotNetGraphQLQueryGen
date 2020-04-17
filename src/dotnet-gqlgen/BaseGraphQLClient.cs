@@ -9,10 +9,15 @@ namespace DotNetGqlClient
 {
     public abstract class BaseGraphQLClient
     {
-        protected string MakeQuery<TSchema, TQuery>(Expression<Func<TSchema, TQuery>> query, bool mutation = false)
+        private uint argNum = 0;
+        protected Dictionary<string, string> typeMappings;
+
+        protected QueryRequest MakeQuery<TSchema, TQuery>(Expression<Func<TSchema, TQuery>> query, bool mutation = false)
         {
+            argNum = 0;
+            var args = new List<string>();
             var gql = new StringBuilder();
-            gql.AppendLine($"{(mutation ? "mutation" : "query")} BaseGraphQLClient {{");
+            var variables = new Dictionary<string, object>();
 
             if (query.NodeType != ExpressionType.Lambda)
                 throw new ArgumentException($"Must provide a LambdaExpression", "query");
@@ -21,13 +26,20 @@ namespace DotNetGqlClient
             if (lambda.Body.NodeType != ExpressionType.New && lambda.Body.NodeType != ExpressionType.MemberInit)
                 throw new ArgumentException($"LambdaExpression must return a NewExpression or MemberInitExpression");
 
-            GetObjectSelection(gql, lambda.Body);
+            GetObjectSelection(gql, lambda.Body, args, variables);
+
+            // prepend operationname as it may have arguments
+            gql.Insert(0, $"{(mutation ? "mutation" : "query")} BaseGraphQLClient{(args.Any() ? $"({string.Join(",", args)})" : "")} {{\n");
 
             gql.Append(@"}");
-            return gql.ToString();
+            return new QueryRequest
+            {
+                Query = gql.ToString(),
+                Variables = variables
+            };
         }
 
-        private static void GetObjectSelection(StringBuilder gql, Expression exp)
+        private void GetObjectSelection(StringBuilder gql, Expression exp, List<string> args, Dictionary<string, object> variables)
         {
             if (exp.NodeType == ExpressionType.New)
             {
@@ -36,7 +48,7 @@ namespace DotNetGqlClient
                 {
                     var fieldVal = newExp.Arguments[i];
                     var fieldProp = newExp.Members[i];
-                    gql.AppendLine($"{fieldProp.Name}: {GetFieldSelection(fieldVal)}");
+                    gql.AppendLine($"{fieldProp.Name}: {GetFieldSelection(fieldVal, args, variables)}");
                 }
             }
             else
@@ -46,12 +58,12 @@ namespace DotNetGqlClient
                 {
                     var valExp = ((MemberAssignment)mi.Bindings[i]).Expression;
                     var fieldVal = mi.Bindings[i].Member;
-                    gql.AppendLine($"{fieldVal.Name}: {GetFieldSelection(valExp)}");
+                    gql.AppendLine($"{fieldVal.Name}: {GetFieldSelection(valExp, args, variables)}");
                 }
             }
         }
 
-        private static string GetFieldSelection(Expression field)
+        private string GetFieldSelection(Expression field, List<string> args, Dictionary<string, object> variables)
         {
             if (field.NodeType == ExpressionType.MemberAccess)
             {
@@ -79,11 +91,11 @@ namespace DotNetGqlClient
             else if (field.NodeType == ExpressionType.Call)
             {
                 var call = (MethodCallExpression)field;
-                return GetSelectionFromMethod(call);
+                return GetSelectionFromMethod(call, args, variables);
             }
             else if (field.NodeType == ExpressionType.Quote)
             {
-                return GetFieldSelection(((UnaryExpression)field).Operand);
+                return GetFieldSelection(((UnaryExpression)field).Operand, args, variables);
             }
             else
             {
@@ -91,7 +103,7 @@ namespace DotNetGqlClient
             }
         }
 
-        private static string GetSelectionFromMethod(MethodCallExpression call)
+        private string GetSelectionFromMethod(MethodCallExpression call, List<string> args, Dictionary<string, object> variables)
         {
             var select = new StringBuilder();
 
@@ -149,7 +161,20 @@ namespace DotNetGqlClient
                     }
                     else if (argType == typeof(DateTime) || argType == typeof(DateTime?))
                     {
-                        argVals.Add($"{param.Name}: \"{((DateTime)argVal).ToString("o")}\"");
+                        argVals.Add($"{param.Name}: \"{(DateTime)argVal:o}\"");
+                    }
+                    else if (argType.IsEnumerableOrArray())
+                    {
+                        var argName = $"a{argNum++}";
+                        var arrType = argType.GetEnumerableOrArrayType();
+                        argVals.Add($"{param.Name}: ${argName}");
+                        var isNullable = arrType.IsNullableType();
+                        if (isNullable)
+                            arrType = arrType.GetGenericArguments()[0];
+                        if (!typeMappings.ContainsKey(arrType.Name))
+                            throw new ArgumentException($"Can't find GQL type for Dotnet type '{arrType.Name}'");
+                        args.Add($"${argName}: [{(isNullable ? typeMappings[arrType.Name].Trim('!') : typeMappings[arrType.Name])}]");
+                        variables.Add($"{argName}", argVal);
                     }
                     else
                     {
@@ -178,7 +203,7 @@ namespace DotNetGqlClient
                     exp = ((UnaryExpression)exp).Operand;
                 if (exp.NodeType == ExpressionType.Lambda)
                     exp = ((LambdaExpression)exp).Body;
-                GetObjectSelection(select, exp);
+                GetObjectSelection(select, exp, args, variables);
             }
             select.Append("}");
             return select.ToString();
@@ -197,6 +222,100 @@ namespace DotNetGqlClient
                 select.AppendLine($"{field.Name}: {name}");
             }
             return select.ToString();
+        }
+    }
+
+    public class QueryRequest
+    {
+        // Name of the query or mutation you want to run in the Query (if it contains many)
+        public string OperationName { get; set; }
+        /// <summary>
+        /// GraphQL query document
+        /// </summary>
+        /// <value></value>
+        public string Query { get; set; }
+        public Dictionary<string, object> Variables { get; set; }
+    }
+
+    public static class TypeExtensions
+    {
+        /// <summary>
+        /// Returns true if this type is an Enumerable<> or an array
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static bool IsEnumerableOrArray(this Type source)
+        {
+            if (source == typeof(string) || source == typeof(byte[]))
+                return false;
+
+            if (source.GetTypeInfo().IsArray)
+            {
+                return true;
+            }
+            var isEnumerable = false;
+            if (source.GetTypeInfo().IsGenericType && !source.IsNullableType())
+            {
+                isEnumerable = IsGenericTypeEnumerable(source);
+            }
+            return isEnumerable;
+        }
+
+        private static bool IsGenericTypeEnumerable(Type source)
+        {
+            bool isEnumerable = (source.GetTypeInfo().IsGenericType && source.GetGenericTypeDefinition() == typeof(IEnumerable<>) || source.GetTypeInfo().IsGenericType && source.GetGenericTypeDefinition() == typeof(IQueryable<>));
+            if (!isEnumerable)
+            {
+                foreach (var intType in source.GetInterfaces())
+                {
+                    isEnumerable = IsGenericTypeEnumerable(intType);
+                    if (isEnumerable)
+                        break;
+                }
+            }
+
+            return isEnumerable;
+        }
+
+        /// <summary>
+        /// Return the array element type or the generic type for a IEnumerable<T>
+        /// Specifically does not treat string as IEnumerable<char> and will not return byte for byte[]
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Type GetEnumerableOrArrayType(this Type type)
+        {
+            if (type == typeof(string) || type == typeof(byte[]) || type == typeof(byte))
+            {
+                return null;
+            }
+            if (type.IsArray)
+            {
+                return type.GetElementType();
+            }
+            if (type.GetTypeInfo().IsGenericType && (
+                type.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
+                type.GetGenericTypeDefinition() == typeof(IList<>) ||
+                type.GetGenericTypeDefinition() == typeof(IReadOnlyList<>) ||
+                type.GetGenericTypeDefinition() == typeof(List<>) ||
+                type.GetGenericTypeDefinition() == typeof(ICollection<>) ||
+                type.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>)))
+            {
+                return type.GetGenericArguments()[0];
+            }
+            foreach (var intType in type.GetInterfaces())
+            {
+                if (intType.IsEnumerableOrArray())
+                {
+                    return intType.GetEnumerableOrArrayType();
+                }
+            }
+            return null;
+        }
+
+        public static bool IsNullableType(this Type t)
+        {
+            return t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
     }
 }

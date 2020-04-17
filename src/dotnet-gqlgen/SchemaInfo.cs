@@ -6,7 +6,7 @@ namespace dotnet_gqlgen
 {
     public class SchemaInfo
     {
-        public Dictionary<string, string> typeMappings = new Dictionary<string, string> {
+        public Dictionary<string, string> gqlToDotnetTypeMappings = new Dictionary<string, string> {
             {"String", "string"},
             {"ID", "string"},
             {"Int", "int?"},
@@ -26,7 +26,7 @@ namespace dotnet_gqlgen
                 foreach (var item in typeMappings)
                 {
                     // overrides
-                    this.typeMappings[item.Key] = item.Value;
+                    this.gqlToDotnetTypeMappings[item.Key] = item.Value;
                 }
             }
             Schema = new List<Field>();
@@ -62,13 +62,13 @@ namespace dotnet_gqlgen
 
         internal bool HasDotNetType(string typeName)
         {
-            return typeMappings.ContainsKey(typeName) || Types.ContainsKey(typeName) || Inputs.ContainsKey(typeName) || Enums.ContainsKey(typeName);
+            return gqlToDotnetTypeMappings.ContainsKey(typeName) || Types.ContainsKey(typeName) || Inputs.ContainsKey(typeName) || Enums.ContainsKey(typeName);
         }
 
         internal string GetDotNetType(string typeName)
         {
-            if (typeMappings.ContainsKey(typeName))
-                return typeMappings[typeName];
+            if (gqlToDotnetTypeMappings.ContainsKey(typeName))
+                return gqlToDotnetTypeMappings[typeName];
             if (Types.ContainsKey(typeName))
                 return Types[typeName].Name;
             if (Enums.ContainsKey(typeName))

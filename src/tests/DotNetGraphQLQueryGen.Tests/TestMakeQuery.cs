@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using DotNetGqlClient;
 using Generated;
+using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace CoreData.Model.Tests
 {
-    public class TestClient : BaseGraphQLClient
+    public class TestClient : TestHttpClient
     {
-        internal string MakeQuery<TReturn>(Expression<Func<RootQuery, TReturn>> p, bool mutation = false)
+        internal QueryRequest MakeQuery<TReturn>(Expression<Func<RootQuery, TReturn>> p, bool mutation = false)
         {
             return base.MakeQuery(p, mutation);
         }
-        internal string MakeMutation<TReturn>(Expression<Func<Mutation, TReturn>> p, bool mutation = false)
+        internal QueryRequest MakeMutation<TReturn>(Expression<Func<Mutation, TReturn>> p, bool mutation = false)
         {
             return base.MakeQuery(p, mutation);
         }
@@ -39,7 +40,7 @@ namespace CoreData.Model.Tests
 Movies: movies {{
 Id: id
 }}
-}}".Replace("\r\n", "\n"), query);
+}}".Replace("\r\n", "\n"), query.Query);
         }
 
         [Fact]
@@ -64,7 +65,7 @@ DirectorId: directorId
 Rating: rating
 }}
 }}
-}}".Replace("\r\n", "\n"), query);
+}}".Replace("\r\n", "\n"), query.Query);
         }
 
         [Fact]
@@ -82,7 +83,7 @@ Rating: rating
 Movies: movies {{
 Id: id
 }}
-}}".Replace("\r\n", "\n"), query);
+}}".Replace("\r\n", "\n"), query.Query);
         }
 
         [Fact]
@@ -100,7 +101,28 @@ Id: id
 Movie: addMovie(name: ""movie"", rating: 5.5, released: ""2019-10-30T17:55:23.0000000"") {{
 Id: id
 }}
-}}".Replace("\r\n", "\n"), query);
+}}".Replace("\r\n", "\n"), query.Query);
+        }
+
+        [Fact]
+        public void TestArrayArg()
+        {
+            var client = new TestClient();
+            var idList = new List<int?> {1, 2, 5};
+            var query = client.MakeQuery(q => new
+            {
+                Movies = q.MoviesByIds(idList, s => new
+                {
+                    s.Id,
+                }),
+            });
+            Assert.Equal($@"query BaseGraphQLClient($a0: [Int]) {{
+Movies: moviesByIds(ids: $a0) {{
+Id: id
+}}
+}}".Replace("\r\n", "\n"), query.Query);
+
+            Assert.Equal(@"{""a0"":[1,2,5]}".Replace("\r\n", "\n"), JsonConvert.SerializeObject(query.Variables));
         }
 
         [Fact]

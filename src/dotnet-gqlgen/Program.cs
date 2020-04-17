@@ -24,6 +24,15 @@ namespace dotnet_gqlgen
         [Option(LongName = "output", ShortName = "o", Description = "Output directory")]
         public string OutputDir { get; } = "output";
 
+        public Dictionary<string, string> dotnetToGqlTypeMappings = new Dictionary<string, string> {
+            {"string", "String"},
+            {"String", "String"},
+            {"int", "Int!"},
+            {"Int32", "Int!"},
+            {"double", "Float!"},
+            {"bool", "Boolean!"},
+        };
+
         public static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
         private async void OnExecute()
@@ -36,7 +45,10 @@ namespace dotnet_gqlgen
                 var mappings = new Dictionary<string, string>();
                 if (!string.IsNullOrEmpty(ScalarMapping))
                 {
-                    mappings = ScalarMapping.Split(',').Select(s => s.Split('=')).ToDictionary(k => k[0], v => v[1]);
+                    ScalarMapping.Split(',').Select(s => s.Split('=')).ToList().ForEach(i => {
+                        dotnetToGqlTypeMappings[i[1]] = i[0];
+                        mappings[i[0]] = i[1];
+                    });
                 }
 
                 // parse into AST
@@ -71,6 +83,7 @@ namespace dotnet_gqlgen
                     Query = typeInfo.Query,
                     Mutation = typeInfo.Mutation,
                     ClientClassName = ClientClassName,
+                    Mappings = dotnetToGqlTypeMappings
                 });
                 File.WriteAllText($"{OutputDir}/{ClientClassName}.cs", result);
 
