@@ -23,17 +23,17 @@ namespace DotNetGraphQLQueryGen.Tests
             var queryTypeName = results.Schema.First(s => s.Name == "query").TypeName;
 
             var queryType = results.Types[queryTypeName];
-            Assert.Equal(8, queryType.Fields.Count);
+            Assert.Equal(9, queryType.Fields.Count);
             Assert.Equal("actors", queryType.Fields.ElementAt(1).Name);
             Assert.Equal("Person", queryType.Fields.ElementAt(1).TypeName);
             Assert.True(queryType.Fields.ElementAt(1).IsArray);
-            Assert.Equal("person", queryType.Fields.ElementAt(6).Name);
-            Assert.Equal("Person", queryType.Fields.ElementAt(6).TypeName);
-            Assert.False(queryType.Fields.ElementAt(6).IsArray);
-            Assert.Single(queryType.Fields.ElementAt(6).Args);
-            Assert.Equal("id", queryType.Fields.ElementAt(6).Args.First().Name);
-            Assert.Equal("Int", queryType.Fields.ElementAt(6).Args.First().TypeName);
-            Assert.True(queryType.Fields.ElementAt(6).Args.First().Required);
+            Assert.Equal("person", queryType.Fields.ElementAt(7).Name);
+            Assert.Equal("Person", queryType.Fields.ElementAt(7).TypeName);
+            Assert.False(queryType.Fields.ElementAt(7).IsArray);
+            Assert.Single(queryType.Fields.ElementAt(7).Args);
+            Assert.Equal("id", queryType.Fields.ElementAt(7).Args.First().Name);
+            Assert.Equal("Int", queryType.Fields.ElementAt(7).Args.First().TypeName);
+            Assert.True(queryType.Fields.ElementAt(7).Args.First().Required);
         }
 
         [Fact]

@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>dotnet_gqlgen</RootNamespace>
     <PreserveCompilationContext>true</PreserveCompilationContext>
+    <PackageVersion>0.2.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
