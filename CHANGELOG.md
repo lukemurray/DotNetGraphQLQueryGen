@@ -1,7 +1,7 @@
 # 0.2.0
 - Fixed issues with enum support
 - Better support for fields/mutations that take arrays as arguments
-- #4 Support schema with default values - note it doesn't do anything with them yet
+- #4 Support schema with default values - note it doesn't do anything with them. This seems like the responibility of the server you're calling to implement those.
 
 # 0.1.0
 - Inital version, given a GraphQL schema file we generate
