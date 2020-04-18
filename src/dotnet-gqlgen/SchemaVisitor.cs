@@ -104,7 +104,7 @@ namespace dotnet_gqlgen
             var fields = new List<Field>();
             using (new FieldConsumer(this, fields))
             {
-                var result = base.Visit(context.objectDef());
+                var result = base.Visit(context.inputFields());
                 schemaInfo.Inputs.Add(context.typeName.Text, new TypeInfo(fields, context.typeName.Text, desc, isInput:true));
                 return result;
             }

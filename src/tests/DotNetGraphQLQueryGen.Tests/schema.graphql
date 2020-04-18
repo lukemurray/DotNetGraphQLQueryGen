@@ -91,12 +91,12 @@ type PersonPagination {
 
 input Detail {
 	description: String!
+	someNumber: Int = 9
 }
-
 
 type Mutation {
 	"Add a new Movie object"
-	addMovie(name: String!, rating: Float, details: [Detail], genre: Int, released: Date): Movie
+	addMovie(name: String!, rating: Float = 5, details: [Detail], genre: Int, released: Date): Movie
 	addActor(firstName: String, lastName: String, movieId: Int): Person
 	addActor2(firstName: String, lastName: String, movieId: Int): Person
 
