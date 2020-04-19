@@ -59,7 +59,6 @@ type Person {
 	id: Int!
 	firstName: String!
 	lastName: String!
-	dob: Date!
 	"Movies they acted in"
 	actorIn: [Movie]
 	"Movies they wrote"
@@ -71,6 +70,10 @@ type Person {
 	age: Int!
 	"Person's name"
 	name: String!
+}
+
+extend type Person {
+	dob: Date!
 }
 
 type Writer {

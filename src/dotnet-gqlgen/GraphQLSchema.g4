@@ -14,7 +14,7 @@ constant    : string | int | decimal | boolean | NAME; // NAME should be an enum
 schema      : (schemaDef | typeDef | scalarDef | inputDef | enumDef)+;
 
 schemaDef   : comment* 'schema' ws* objectDef;
-typeDef     : comment* 'type' ws+ typeName=NAME ws* objectDef;
+typeDef     : comment* ('extend' ws*)? 'type' ws+ typeName=NAME ws* objectDef;
 scalarDef   : comment* 'scalar' ws+ typeName=NAME ws+;
 inputDef    : comment* 'input' ws+ typeName=NAME ws* '{' ws* inputFields ws* '}' ws*;
 enumDef     : comment* 'enum' ws+ typeName=NAME ws* '{' (ws* enumItem ws* comment* ws*)+ '}' ws*;

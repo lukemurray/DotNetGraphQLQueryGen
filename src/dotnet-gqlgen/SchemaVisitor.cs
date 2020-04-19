@@ -118,7 +118,11 @@ namespace dotnet_gqlgen
             using (new FieldConsumer(this, fields))
             {
                 var result = base.Visit(context.objectDef());
-                schemaInfo.Types.Add(context.typeName.Text, new TypeInfo(fields, context.typeName.Text, desc));
+                // you can extend type to add fields to it so the type might already be in the schema
+                if (schemaInfo.Types.ContainsKey(context.typeName.Text))
+                    schemaInfo.Types[context.typeName.Text].Fields.AddRange(fields);
+                else
+                    schemaInfo.Types.Add(context.typeName.Text, new TypeInfo(fields, context.typeName.Text, desc));
                 return result;
             }
         }
