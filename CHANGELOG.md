@@ -3,6 +3,7 @@
 - Better support for fields/mutations that take arrays as arguments
 - #4 Support schema with default values - note it doesn't do anything with them. This seems like the responibility of the server you're calling to implement those.
 - Fix #5 support schema with `extend type` types. The fields are added to the exisiting type
+- Fix #6 schema keywords can be used a ids (field names, argument names etc)
 
 # 0.1.0
 - Inital version, given a GraphQL schema file we generate

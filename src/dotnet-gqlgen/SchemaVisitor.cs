@@ -21,10 +21,10 @@ namespace dotnet_gqlgen
             var result = base.VisitFieldDef(context);
             var docComment = context.comment().LastOrDefault();
             var desc = docComment != null ? (string)VisitComment(docComment) : null;
-            var name = context.name.Text;
+            var name = context.name.GetText();
             var args = (List<Arg>)VisitArguments(context.args);
-            var type = context.type.type?.Text;
-            var arrayType = context.type.arrayType?.Text;
+            var type = context.type.type?.GetText();
+            var arrayType = context.type.arrayType?.GetText();
             addFieldsTo.Add(new Field(this.schemaInfo)
             {
                 Name = name,
@@ -44,11 +44,11 @@ namespace dotnet_gqlgen
             {
                 foreach (var arg in context.argument())
                 {
-                    var type = arg.dataType().type?.Text;
-                    var arrayType = arg.dataType().arrayType?.Text;
+                    var type = arg.dataType().type?.GetText();
+                    var arrayType = arg.dataType().arrayType?.GetText();
                     args.Add(new Arg(this.schemaInfo)
                     {
-                        Name = arg.NAME().GetText(),
+                        Name = arg.id().GetText(),
                         TypeName = arrayType ?? type,
                         Required = (arg.dataType().arrayRequired ?? arg.dataType().required) != null,
                         IsArray = arrayType != null
@@ -84,14 +84,14 @@ namespace dotnet_gqlgen
             using (new FieldConsumer(this, fields))
             {
                 var result = base.VisitEnumDef(context);
-                schemaInfo.Enums.Add(context.typeName.Text, fields.Select(f => f.Name).ToList());
+                schemaInfo.Enums.Add(context.typeName.GetText(), fields.Select(f => f.Name).ToList());
                 return result;
             }
         }
         public override object VisitEnumItem(GraphQLSchemaParser.EnumItemContext context)
         {
             this.addFieldsTo.Add(new Field(this.schemaInfo) {
-                Name = context.name.Text,
+                Name = context.name.GetText(),
                 Args = new List<Arg>(),
             });
             return base.VisitEnumItem(context);
@@ -105,7 +105,7 @@ namespace dotnet_gqlgen
             using (new FieldConsumer(this, fields))
             {
                 var result = base.Visit(context.inputFields());
-                schemaInfo.Inputs.Add(context.typeName.Text, new TypeInfo(fields, context.typeName.Text, desc, isInput:true));
+                schemaInfo.Inputs.Add(context.typeName.GetText(), new TypeInfo(fields, context.typeName.GetText(), desc, isInput:true));
                 return result;
             }
         }
@@ -119,17 +119,17 @@ namespace dotnet_gqlgen
             {
                 var result = base.Visit(context.objectDef());
                 // you can extend type to add fields to it so the type might already be in the schema
-                if (schemaInfo.Types.ContainsKey(context.typeName.Text))
-                    schemaInfo.Types[context.typeName.Text].Fields.AddRange(fields);
+                if (schemaInfo.Types.ContainsKey(context.typeName.GetText()))
+                    schemaInfo.Types[context.typeName.GetText()].Fields.AddRange(fields);
                 else
-                    schemaInfo.Types.Add(context.typeName.Text, new TypeInfo(fields, context.typeName.Text, desc));
+                    schemaInfo.Types.Add(context.typeName.GetText(), new TypeInfo(fields, context.typeName.GetText(), desc));
                 return result;
             }
         }
         public override object VisitScalarDef(GraphQLSchemaParser.ScalarDefContext context)
         {
             var result = base.VisitScalarDef(context);
-            schemaInfo.Scalars.Add(context.typeName.Text);
+            schemaInfo.Scalars.Add(context.typeName.GetText());
             return result;
         }
     }

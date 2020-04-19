@@ -46,6 +46,8 @@ type Movie {
 	director: Person!
 	directorId: Int!
 	rating: Float
+	"Just testing using gql schema keywords here"
+	type: Int
 }
 
 type Actor {
