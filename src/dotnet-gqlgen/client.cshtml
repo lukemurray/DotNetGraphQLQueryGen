@@ -34,16 +34,13 @@ namespace @Model.Namespace
         private Uri apiUrl;
         private readonly HttpClient client;
 
-        public @(Model.ClientClassName)()
+        private @(Model.ClientClassName)()
         {
             this.typeMappings = new Dictionary<string, string> {
                 @foreach(var kvp in Model.Mappings) {
                     @:{ "@kvp.Key" , "@kvp.Value" },
                 }
             };
-            this.apiUrl = new Uri("");
-            this.client = new HttpClient();
-            this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         public @(Model.ClientClassName)(HttpClient client)
@@ -71,6 +68,7 @@ namespace @Model.Namespace
             // you will need to implement any auth
             // req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var res = await client.SendAsync(req);
+            res.EnsureSuccessStatusCode();
             var strResult = await res.Content.ReadAsStringAsync();
             var data = JsonConvert.DeserializeObject<GqlResult<TQuery>>(strResult);
             return data;
