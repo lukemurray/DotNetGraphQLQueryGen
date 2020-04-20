@@ -34,7 +34,7 @@ inputFields : fieldDef (ws* '=' ws* constant)? (ws* ',')? (ws* fieldDef (ws* '='
 objectDef   : '{' ws* fieldDef (ws* ',')? (ws* fieldDef (ws* ',')?)* ws* comment* ws* '}' ws*;
 
 fieldDef    : comment* name=id ('(' args=arguments ')')? ws* ':' ws* type=dataType;
-enumItem    : comment* name=id;
+enumItem    : comment* name=id (ws* '.')?;
 arguments   : ws* argument (ws* '=' ws* constant)? (ws* ',' ws* argument (ws* '=' ws* constant)?)*;
 argument    : id ws* ':' ws* dataType;
 
