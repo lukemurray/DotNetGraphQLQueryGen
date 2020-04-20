@@ -7,7 +7,7 @@ using DotNetGqlClient;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on 17/4/20 9:30:56 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql with arguments -n Generated -c TestHttpClient -m Date=DateTime
+/// Generated on 20/4/20 6:13:33 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql -n Generated -c TestHttpClient -m Date=DateTime
 /// </summary>
 
 namespace Generated
@@ -17,14 +17,14 @@ namespace Generated
     public interface RootQuery
     {
         /// <summary>
-        /// Pagination [defaults: page  , pagesize  ]
+        /// Pagination. [defaults: page = 1, pagesize = 10]
         ///
         /// This shortcut will return a selection of all fields
         /// </summary>
         [GqlFieldName("actorPager")]
         PersonPagination ActorPager();
         /// <summary>
-        /// Pagination [defaults: page  , pagesize  ]
+        /// Pagination. [defaults: page = 1, pagesize = 10]
         ///
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
@@ -202,6 +202,11 @@ namespace Generated
         int DirectorId { get; }
         [GqlFieldName("rating")]
         double? Rating { get; }
+        /// <summary>
+        /// Just testing using gql schema keywords here
+        /// </summary>
+        [GqlFieldName("type")]
+        int? Type { get; }
     }
     public interface Actor
     {
@@ -238,8 +243,6 @@ namespace Generated
         string FirstName { get; }
         [GqlFieldName("lastName")]
         string LastName { get; }
-        [GqlFieldName("dob")]
-        DateTime Dob { get; }
         /// <summary>
         /// Movies they acted in
         ///
@@ -283,15 +286,17 @@ namespace Generated
         [GqlFieldName("isDeleted")]
         bool IsDeleted { get; }
         /// <summary>
-        /// Show the persons age
+        /// Show the person's age
         /// </summary>
         [GqlFieldName("age")]
         int Age { get; }
         /// <summary>
-        /// Persons name
+        /// Person's name
         /// </summary>
         [GqlFieldName("name")]
         string Name { get; }
+        [GqlFieldName("dob")]
+        DateTime Dob { get; }
     }
     public interface Writer
     {
@@ -371,6 +376,8 @@ namespace Generated
     {
         [GqlFieldName("description")]
         public string Description { get; set; }
+        [GqlFieldName("someNumber")]
+        public int? SomeNumber { get; set; }
     }
 
 }

@@ -30,12 +30,12 @@ scalarDef   : comment* SCALAR ws+ typeName=id ws+;
 inputDef    : comment* INPUT ws+ typeName=id ws* '{' ws* inputFields ws* '}' ws*;
 enumDef     : comment* ENUM ws+ typeName=id ws* '{' (ws* enumItem ws* comment* ws*)+ '}' ws*;
 
-inputFields : fieldDef (ws* '=' ws* constant)? (ws* fieldDef (ws* '=' ws* constant)?)* ws*;
-objectDef   : '{' ws* fieldDef (ws* fieldDef)* ws* '}' ws*;
+inputFields : fieldDef (ws* '=' ws* constant)? (ws* ',')? (ws* fieldDef (ws* '=' ws* constant)? (ws* ',')?)* ws*;
+objectDef   : '{' ws* fieldDef (ws* ',')? (ws* fieldDef (ws* ',')?)* ws* '}' ws*;
 
 fieldDef    : comment* name=id ('(' args=arguments ')')? ws* ':' ws* type=dataType;
 enumItem    : comment* name=id;
-arguments   : ws* argument (ws* '=' ws* constant)? (ws* ','* ws* argument (ws* '=' ws* constant)?)*;
+arguments   : ws* argument (ws* '=' ws* constant)? (ws* ',' ws* argument (ws* '=' ws* constant)?)*;
 argument    : id ws* ':' ws* dataType;
 
 dataType    : (type=id required='!'? | '[' arrayType=id elementTypeRequired='!'? ']' arrayRequired='!'?);

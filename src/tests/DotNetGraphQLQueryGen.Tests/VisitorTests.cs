@@ -75,7 +75,7 @@ namespace DotNetGraphQLQueryGen.Tests
 
             var typeDef = results.Types["Movie"];
             Assert.Equal("This is a movie entity", typeDef.Description);
-            Assert.Equal(9, typeDef.Fields.Count);
+            Assert.Equal(10, typeDef.Fields.Count);
             Assert.Equal("id", typeDef.Fields.ElementAt(0).Name);
             Assert.Equal("String", typeDef.Fields.ElementAt(1).TypeName);
             Assert.False(typeDef.Fields.ElementAt(1).IsArray);

@@ -63,6 +63,7 @@ Genre: genre
 Released: released
 DirectorId: directorId
 Rating: rating
+Type: type
 }}
 }}
 }}".Replace("\r\n", "\n"), query.Query);

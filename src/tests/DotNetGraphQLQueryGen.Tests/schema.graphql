@@ -34,8 +34,8 @@ type SubscriptionType {
 This is a movie entity
 """
 type Movie {
-	id: Int!
-	name: String!
+	id: Int!,
+	name: String!,
 	"Enum of Genre"
 	genre: Int!
 	released: Date!
@@ -95,7 +95,7 @@ type PersonPagination {
 }
 
 input Detail {
-	description: String!
+	description: String!,
 	someNumber: Int = 9
 }
 
