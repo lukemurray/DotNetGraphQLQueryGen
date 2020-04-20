@@ -40,7 +40,7 @@ namespace CoreData.Model.Tests
 Movies: movies {{
 Id: id
 }}
-}}".Replace("\r\n", "\n"), query.Query);
+}}", query.Query, ignoreLineEndingDifferences: true);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ Rating: rating
 Type: type
 }}
 }}
-}}".Replace("\r\n", "\n"), query.Query);
+}}", query.Query, ignoreLineEndingDifferences: true);
         }
 
         [Fact]
@@ -84,7 +84,7 @@ Type: type
 Movies: movies {{
 Id: id
 }}
-}}".Replace("\r\n", "\n"), query.Query);
+}}", query.Query, ignoreLineEndingDifferences: true);
         }
 
         [Fact]
@@ -102,7 +102,7 @@ Id: id
 Movie: addMovie(name: ""movie"", rating: 5.5, released: ""2019-10-30T17:55:23.0000000"") {{
 Id: id
 }}
-}}".Replace("\r\n", "\n"), query.Query);
+}}", query.Query, ignoreLineEndingDifferences: true);
         }
 
         [Fact]
@@ -121,7 +121,7 @@ Id: id
 Movies: moviesByIds(ids: $a0) {{
 Id: id
 }}
-}}".Replace("\r\n", "\n"), query.Query);
+}}", query.Query, ignoreLineEndingDifferences: true);
 
             Assert.Equal(@"{""a0"":[1,2,5]}".Replace("\r\n", "\n"), JsonConvert.SerializeObject(query.Variables));
         }
