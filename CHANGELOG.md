@@ -6,6 +6,7 @@
 - Fix #6 schema keywords can be used a ids (field names, argument names etc)
 - Fix #8 support optional commas in schema file
 - #7 correctly generate multi line doc strings
+- #7 correctly ignore `#` comments
 
 # 0.1.0
 - Inital version, given a GraphQL schema file we generate

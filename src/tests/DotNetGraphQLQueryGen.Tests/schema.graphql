@@ -108,5 +108,6 @@ type Mutation {
 	addMovie(name: String!, rating: Float = 5, details: [Detail], genre: Int, released: Date): Movie
 	addActor(firstName: String, lastName: String, movieId: Int): Person
 	addActor2(firstName: String, lastName: String, movieId: Int): Person
-
+	# Not required for now
+  	#removePerson(id: Int!): Int
 }
