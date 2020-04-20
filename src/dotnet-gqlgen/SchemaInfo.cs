@@ -94,6 +94,11 @@ namespace dotnet_gqlgen
         public List<Field> Fields { get; }
         public string Name { get; }
         public string Description { get; }
+        public string DescriptionForComment(int indent = 8)
+        {
+            return string.Join("\n", Description.Split("\n").Select(l => l.Trim()).Where(l => l.Count() > 0).Select(l => $"/// {l}".PadLeft(indent + l.Length + 4))) + "\n";
+        }
+
         public bool IsInput { get; }
     }
 
@@ -112,6 +117,10 @@ namespace dotnet_gqlgen
         public bool IsNonNullable { get; set; }
         public List<Arg> Args { get; set; }
         public string Description { get; set; }
+        public string DescriptionForComment(int indent = 8)
+        {
+            return string.Join("\n", Description.Split("\n").Select(l => l.Trim()).Where(l => l.Count() > 0).Select(l => $"/// {l}".PadLeft(indent + l.Length + 4))) + "\n";
+        }
 
         public string DotNetName => Name[0].ToString().ToUpper() + string.Join("", Name.Skip(1));
         public string DotNetType

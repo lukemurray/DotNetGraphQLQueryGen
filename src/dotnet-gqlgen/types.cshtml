@@ -32,7 +32,7 @@ namespace @Model.Namespace
     if (!string.IsNullOrEmpty(gqlType.Description))
     {
     @:/// <summary>
-    @:/// @gqlType.Description
+    @gqlType.DescriptionForComment(4)
     @:/// </summary>
     }
     if (gqlType.IsInput)
@@ -51,7 +51,7 @@ namespace @Model.Namespace
         @if (!string.IsNullOrEmpty(field.Description))
         {
         @:/// <summary>
-        @:/// @field.Description
+        @field.DescriptionForComment()
         @:/// </summary>
         }
         @:[GqlFieldName("@field.Name")]
@@ -71,7 +71,7 @@ namespace @Model.Namespace
         @:/// <summary>
         @if (!string.IsNullOrEmpty(field.Description))
         {
-        @:/// @field.Description
+        @field.DescriptionForComment()
         @:///
         }
         @:/// This shortcut will return a selection of all fields
@@ -83,8 +83,7 @@ namespace @Model.Namespace
         @:/// <summary>
         @if (!string.IsNullOrEmpty(field.Description))
         {
-        @:/// @field.Description
-        @:///
+        @field.DescriptionForComment()
         }
         @:/// </summary>
         @:/// <param name="selection">Projection of fields to select from the object</param>

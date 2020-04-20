@@ -6,8 +6,12 @@ schema {
 scalar Date
 
 type RootQuery {
-	"Pagination. [defaults: page = 1, pagesize = 10]"
-	actorPager(page: Int, pagesize: Int, search: String): PersonPagination
+	""" Returns list of actors paged
+		@param page Page number to return [defaults: page = 1]
+		@param pagesize Number of items per page to return [pagesize = 10]
+		@param search Optional search string
+	"""
+	actorPager(page: Int = 1, pagesize: Int = 10, search: String): PersonPagination
 	"List of actors"
 	actors: [Person]
 	"List of directors"

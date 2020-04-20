@@ -40,6 +40,9 @@ argument    : id ws* ':' ws* dataType;
 
 dataType    : (type=id required='!'? | '[' arrayType=id elementTypeRequired='!'? ']' arrayRequired='!'?);
 
-comment     : ws* (('"' ~('\n'|'\r')* '"') | ('"""' ~'"""'* '"""') | ('#' ~('\n'|'\r')*)) ws*;
+comment         : ws* (singleLineDoc | multiLineDoc | ignoreComment) ws*;
+ignoreComment   : ('#' ~('\n'|'\r')*);
+multiLineDoc    : ('"""' ~'"""'* '"""');
+singleLineDoc   : ('"' ~('\n'|'\r')* '"');
 
 ws  : ' ' | '\t' | '\n' | '\r';

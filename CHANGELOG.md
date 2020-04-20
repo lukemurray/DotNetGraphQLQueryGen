@@ -5,6 +5,7 @@
 - Fix #5 support schema with `extend type` types. The fields are added to the exisiting type
 - Fix #6 schema keywords can be used a ids (field names, argument names etc)
 - Fix #8 support optional commas in schema file
+- #7 correctly generate multi line doc strings
 
 # 0.1.0
 - Inital version, given a GraphQL schema file we generate
