@@ -41,7 +41,7 @@ argument    : id ws* ':' ws* dataType;
 dataType    : (type=id required='!'? | '[' arrayType=id elementTypeRequired='!'? ']' arrayRequired='!'?);
 
 comment         : ws* (singleLineDoc | multiLineDoc | ignoreComment) ws*;
-ignoreComment   : ('#' ~('\n'|'\r')*) ('\n' | EOF);
+ignoreComment   : ('#' ~('\n'|'\r')*) ('\n' | '\r' | EOF);
 multiLineDoc    : ('"""' ~'"""'* '"""');
 singleLineDoc   : ('"' ~('\n'|'\r')* '"');
 
