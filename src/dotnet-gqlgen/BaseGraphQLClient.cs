@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace DotNetGqlClient
 {
@@ -240,12 +241,15 @@ namespace DotNetGqlClient
     public class QueryRequest
     {
         // Name of the query or mutation you want to run in the Query (if it contains many)
+        [JsonProperty("operationName")]
         public string OperationName { get; set; }
         /// <summary>
         /// GraphQL query document
         /// </summary>
         /// <value></value>
+        [JsonProperty("query")]
         public string Query { get; set; }
+        [JsonProperty("variables")]
         public Dictionary<string, object> Variables { get; set; }
     }
 
