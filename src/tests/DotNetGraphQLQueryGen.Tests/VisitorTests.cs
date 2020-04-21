@@ -19,11 +19,11 @@ namespace DotNetGraphQLQueryGen.Tests
             var results = SchemaCompiler.Compile(File.ReadAllText("../../../schema.graphql"));
             Assert.Equal(2, results.Schema.Count);
             Assert.Equal(8, results.Types.Count);
-            Assert.Single(results.Inputs);
+            Assert.Equal(2, results.Inputs.Count);
             var queryTypeName = results.Schema.First(s => s.Name == "query").TypeName;
 
             var queryType = results.Types[queryTypeName];
-            Assert.Equal(9, queryType.Fields.Count);
+            Assert.Equal(10, queryType.Fields.Count);
             Assert.Equal("actors", queryType.Fields.ElementAt(1).Name);
             Assert.Equal("Person", queryType.Fields.ElementAt(1).TypeName);
             Assert.True(queryType.Fields.ElementAt(1).IsArray);
@@ -69,7 +69,7 @@ namespace DotNetGraphQLQueryGen.Tests
             var results = SchemaCompiler.Compile(File.ReadAllText("../../../schema.graphql"));
             Assert.Equal(2, results.Schema.Count);
             Assert.Equal(8, results.Types.Count);
-            Assert.Single(results.Inputs);
+            Assert.Equal(2, results.Inputs.Count);
             var queryTypeName = results.Schema.First(s => s.Name == "query").TypeName;
             var mutationTypeName = results.Schema.First(s => s.Name == "mutation").TypeName;
 

@@ -13,6 +13,8 @@ namespace DotNetGqlClient
     {
         private uint argNum = 0;
         protected Dictionary<string, string> typeMappings;
+        
+        private class MemberInitDictionary : Dictionary<string, (object, Type)> { }
 
         protected QueryRequest MakeQuery<TSchema, TQuery>(Expression<Func<TSchema, TQuery>> query, bool mutation = false)
         {
@@ -122,39 +124,8 @@ namespace DotNetGqlClient
                 {
                     var arg = call.Arguments.ElementAt(i);
                     var param = call.Method.GetParameters().ElementAt(i);
-                    Type argType = null;
-                    object argVal = null;
 
-                    if (arg.NodeType == ExpressionType.Convert)
-                    {
-                        arg = ((UnaryExpression)arg).Operand;
-                    }
-
-                    switch (arg.NodeType)
-                    {
-                        case ExpressionType.Constant:
-                            var constArg = (ConstantExpression)arg;
-                            argType = constArg.Type;
-                            argVal = constArg.Value;
-                            break;
-
-                        case ExpressionType.MemberAccess:
-                            var ma = (MemberExpression)arg;
-                            var ce = (ConstantExpression)ma.Expression;
-                            argType = ma.Type;
-                            argVal = ma.Member.MemberType == MemberTypes.Field
-                                ? ((FieldInfo)ma.Member).GetValue(ce.Value)
-                                : ((PropertyInfo)ma.Member).GetValue(ce.Value);
-                            break;
-                        case ExpressionType.New:
-                        case ExpressionType.NewArrayInit:
-                            argVal = Expression.Lambda(arg).Compile().DynamicInvoke();
-                            argType = argVal.GetType();
-                            break;
-                        default:
-                            throw new Exception($"Unsupported argument type {arg.NodeType}");
-                    }
-
+                    (object argVal, Type argType) = ArgToTypeAndValue(arg);
                     if (argVal == null)
                         continue;
 
@@ -189,6 +160,55 @@ namespace DotNetGqlClient
             return select.ToString();
         }
 
+        private (object argVal, Type argType) ArgToTypeAndValue(Expression arg)
+        {
+            Type argType;
+            object argVal;
+
+            if (arg.NodeType == ExpressionType.Convert)
+            {
+                arg = ((UnaryExpression)arg).Operand;
+            }
+
+            switch (arg.NodeType)
+            {
+                case ExpressionType.Constant:
+                    var constArg = (ConstantExpression)arg;
+                    argType = constArg.Type;
+                    argVal = constArg.Value;
+                    break;
+                case ExpressionType.MemberAccess:
+                    var ma = (MemberExpression)arg;
+                    var ce = (ConstantExpression)ma.Expression;
+                    argType = ma.Type;
+                    argVal = ma.Member.MemberType == MemberTypes.Field
+                        ? ((FieldInfo)ma.Member).GetValue(ce.Value)
+                        : ((PropertyInfo)ma.Member).GetValue(ce.Value);
+                    break;
+                case ExpressionType.MemberInit:
+                    var memberInitDict = new MemberInitDictionary();
+                    foreach (var binding in ((MemberInitExpression)arg).Bindings)
+                    {
+                        var attr = binding.Member.GetCustomAttributes<GqlFieldNameAttribute>().FirstOrDefault();
+                        var name = attr?.Name ?? binding.Member.Name;
+                        var expr = ((MemberAssignment)binding).Expression;
+                        memberInitDict.Add(name, ArgToTypeAndValue(expr));
+                    }
+                    argVal = memberInitDict;
+                    argType = argVal.GetType();
+                    break;
+                case ExpressionType.New:
+                case ExpressionType.NewArrayInit:
+                    argVal = Expression.Lambda(arg).Compile().DynamicInvoke();
+                    argType = argVal.GetType();
+                    break;
+                default:
+                    throw new Exception($"Unsupported argument type {arg.NodeType}");
+            }
+
+            return (argVal, argType);
+        }
+
         private string ArgValToString(List<string> operationArgs, Dictionary<string, object> variables, ParameterInfo param, Type argType, object val)
         {
             var type = Nullable.GetUnderlyingType(argType) ?? argType;
@@ -204,6 +224,12 @@ namespace DotNetGqlClient
                     if (type == typeof(Guid))
                     {
                         return $"\"{val}\"";
+                    }
+                    if (type == typeof(MemberInitDictionary))
+                    {
+                        var memberInitDict = (MemberInitDictionary)val;
+                        var memberFields = memberInitDict.Select((a) => $"{a.Key}: {ArgValToString(operationArgs, variables, param, a.Value.Item2, a.Value.Item1)}");
+                        return $"{{ {string.Join(", ", memberFields)} }}";
                     }
                     if (type.IsEnumerableOrArray())
                     {
