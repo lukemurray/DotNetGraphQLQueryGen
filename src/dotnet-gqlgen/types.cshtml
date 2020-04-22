@@ -80,6 +80,8 @@ namespace @Model.Namespace
         @:@field.DotNetType @(field.DotNetName)();
         }
 
+        @foreach(var outputMethodSig in field.OutputMethodSigs())
+        {
         @:/// <summary>
         @if (!string.IsNullOrEmpty(field.Description))
         {
@@ -88,7 +90,8 @@ namespace @Model.Namespace
         @:/// </summary>
         @:/// <param name="selection">Projection of fields to select from the object</param>
         @:[GqlFieldName("@field.Name")]
-        @field.OutputMethodSig()
+        @outputMethodSig
+        }
     }
 }
     @:}

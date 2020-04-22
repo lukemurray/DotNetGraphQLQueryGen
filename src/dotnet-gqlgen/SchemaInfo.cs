@@ -155,25 +155,26 @@ namespace dotnet_gqlgen
             }
         }
 
-        public string OutputMethodSig()
+        public IEnumerable<string> OutputMethodSigs()
         {
-            var sb = new StringBuilder("        ");
-            sb.Append(IsArray ? "List<TReturn> " : "TReturn ");
-            sb.Append(DotNetName).Append("<TReturn>(");
-            sb.Append(ArgsOutput());
-            if (Args.Count > 0)
-                sb.Append(", ");
-            sb.AppendLine($"Expression<Func<{DotNetTypeSingle}, TReturn>> selection);");
+            var minimumArgsCount = Args.Reverse<Arg>().SkipWhile(arg => !arg.Required).Count();
+            var nrOfSignatures = (Args.Count - minimumArgsCount) + 1;
 
-            return sb.ToString();
+            for (int i = 0; i < nrOfSignatures; i++)
+            {
+                var sb = new StringBuilder("        ");
+                sb.Append(IsArray ? "List<TReturn> " : "TReturn ");
+                sb.Append(DotNetName).Append("<TReturn>(");
+                sb.AppendLine(string.Join(", ", Args
+                    .Take(minimumArgsCount + i).Select(arg => ArgOutput(arg))
+                    .Append($"Expression<Func<{DotNetTypeSingle}, TReturn>> selection);")));
+                yield return sb.ToString();
+            }
         }
 
-        public string ArgsOutput()
+        public string ArgOutput(Arg arg)
         {
-            if (!Args.Any())
-                return "";
-            var result = string.Join(", ", Args.Select(a => $"{(a.Required ? a.DotNetType.Trim('?') : a.DotNetType)} {a.Name}"));
-            return result;
+            return $"{(arg.Required ? arg.DotNetType.Trim('?') : arg.DotNetType)} {arg.Name}";
         }
 
         public override string ToString()
