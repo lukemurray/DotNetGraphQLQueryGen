@@ -70,6 +70,19 @@ Type: type
         }
 
         [Fact]
+        public void MethodWithScalarReturn()
+        {
+            var client = new ClientForCustomQuery<ICustomRootQuery>();
+            var query = client.MakeQuery(_ => new {
+                displayName = _.GetDisplayName(1)
+            });
+            Assert.Equal($@"query BaseGraphQLClient {{
+displayName: GetDisplayName(id: 1)
+}}", query.Query, ignoreLineEndingDifferences: true);
+        }
+
+
+        [Fact]
         public void TypedClass()
         {
             var client = new TestClient();
@@ -109,7 +122,7 @@ Id: id
         public void TestArrayArg()
         {
             var client = new TestClient();
-            var idList = new List<int?> {1, 2, 5};
+            var idList = new List<int?> { 1, 2, 5 };
             var query = client.MakeQuery(q => new
             {
                 Movies = q.MoviesByIds(idList, s => new
@@ -145,6 +158,7 @@ Id: id
 
             Assert.Equal(@"{""a0"":[1,2,5]}", JsonConvert.SerializeObject(query.Variables), ignoreLineEndingDifferences: true);
         }
+
         [Fact]
         public void TestComplexValueArg()
         {
@@ -205,5 +219,14 @@ LastName: lastName
     public class MyResult
     {
         public List<MovieResult> Movies { get; set; }
+    }
+
+    public class ClientForCustomQuery<TRootQuery>: TestHttpClient
+    {
+        public QueryRequest MakeQuery<TReturn>(Expression<Func<TRootQuery, TReturn>> exp) => base.MakeQuery<TRootQuery, TReturn>(exp);
+    }
+
+    public interface ICustomRootQuery {
+        string GetDisplayName(int id);
     }
 }
