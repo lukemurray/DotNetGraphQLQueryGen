@@ -27,7 +27,13 @@ type RootQuery {
 	person(id: Int!): Person
 	"List of writers"
 	writers: [Person]
+	"List of producers with filter support"
+	producers(filter: FilterBy): [Person]
+}
 
+input FilterBy {
+  field: String!
+  value: String!
 }
 
 type SubscriptionType {

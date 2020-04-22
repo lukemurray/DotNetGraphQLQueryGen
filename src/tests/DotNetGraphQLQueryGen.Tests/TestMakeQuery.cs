@@ -123,7 +123,27 @@ Id: id
 }}
 }}", query.Query, ignoreLineEndingDifferences: true);
 
-            Assert.Equal(@"{""a0"":[1,2,5]}".Replace("\r\n", "\n"), JsonConvert.SerializeObject(query.Variables));
+            Assert.Equal(@"{""a0"":[1,2,5]}", JsonConvert.SerializeObject(query.Variables), ignoreLineEndingDifferences: true);
+        }
+
+        [Fact]
+        public void TestComplexValueArg()
+        {
+            var client = new TestClient();
+            var query = client.MakeQuery(q => new
+            {
+                Producers = q.Producers(new FilterBy { Field = "lastName", Value = "Lucas" }, s => new
+                {
+                    s.Id,
+                    s.LastName
+                }),
+            });
+            Assert.Equal($@"query BaseGraphQLClient {{
+Producers: producers(filter: {{ field: ""lastName"", value: ""Lucas"" }}) {{
+Id: id
+LastName: lastName
+}}
+}}", query.Query, ignoreLineEndingDifferences: true);
         }
 
         [Fact]
