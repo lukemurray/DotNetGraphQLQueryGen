@@ -127,6 +127,25 @@ Id: id
         }
 
         [Fact]
+        public void TestArrayArgExprInited()
+        {
+            var client = new TestClient();
+            var query = client.MakeQuery(q => new
+            {
+                Movies = q.MoviesByIds(new List<int?> { 1, 2, 5 }, s => new
+                {
+                    s.Id,
+                }),
+            });
+            Assert.Equal($@"query BaseGraphQLClient($a0: [Int]) {{
+Movies: moviesByIds(ids: $a0) {{
+Id: id
+}}
+}}", query.Query, ignoreLineEndingDifferences: true);
+
+            Assert.Equal(@"{""a0"":[1,2,5]}", JsonConvert.SerializeObject(query.Variables), ignoreLineEndingDifferences: true);
+        }
+        [Fact]
         public void TestComplexValueArg()
         {
             var client = new TestClient();

@@ -199,6 +199,7 @@ namespace DotNetGqlClient
                     break;
                 case ExpressionType.New:
                 case ExpressionType.NewArrayInit:
+                case ExpressionType.ListInit:
                     argVal = Expression.Lambda(arg).Compile().DynamicInvoke();
                     argType = argVal.GetType();
                     break;
