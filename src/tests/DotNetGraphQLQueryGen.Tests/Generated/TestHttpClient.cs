@@ -1,6 +1,3 @@
-@{
-    DisableEncoding = true;
-}
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -14,10 +11,10 @@ using Newtonsoft.Json;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on @DateTime.Now from @Model.SchemaFile
+/// Generated on 27/4/20 6:46:47 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql
 /// </summary>
 
-namespace @Model.Namespace
+namespace Generated
 {
     public class GqlError
     {
@@ -29,26 +26,30 @@ namespace @Model.Namespace
         public TQuery Data { get; set; }
     }
 
-    public class @Model.ClientClassName : BaseGraphQLClient
+    public class TestHttpClient : BaseGraphQLClient
     {
         private Uri apiUrl;
         private readonly HttpClient client;
 
-        protected @(Model.ClientClassName)()
+        protected TestHttpClient()
         {
             this.typeMappings = new Dictionary<string, string> {
-                @foreach(var kvp in Model.Mappings) {
-                    @:{ "@kvp.Key" , "@kvp.Value" },
-                }
+                    { "string" , "String" },
+                    { "String" , "String" },
+                    { "int" , "Int!" },
+                    { "Int32" , "Int!" },
+                    { "double" , "Float!" },
+                    { "bool" , "Boolean!" },
+                    { "DateTime" , "Date" },
             };
         }
 
-        public @(Model.ClientClassName)(HttpClient client)
+        public TestHttpClient(HttpClient client)
             : this(client.BaseAddress, client)
         {
         }
 
-        public @(Model.ClientClassName)(Uri apiUrl, HttpClient client) : this()
+        public TestHttpClient(Uri apiUrl, HttpClient client) : this()
         {
             this.apiUrl = apiUrl;
             this.client = client;
@@ -74,15 +75,15 @@ namespace @Model.Namespace
             return data;
         }
 
-        public async Task<GqlResult<TQuery>> QueryAsync<TQuery>(Expression<Func<@Model.Query.Name, TQuery>> query)
+        public async Task<GqlResult<TQuery>> QueryAsync<TQuery>(Expression<Func<RootQuery, TQuery>> query)
         {
-            var gql = base.MakeQuery<@Model.Query.Name, TQuery>(query);
+            var gql = base.MakeQuery<RootQuery, TQuery>(query);
             return await ProcessResult<TQuery>(gql);
         }
 
-        public async Task<GqlResult<TQuery>> MutateAsync<TQuery>(Expression<Func<@Model.Mutation.Name, TQuery>> query)
+        public async Task<GqlResult<TQuery>> MutateAsync<TQuery>(Expression<Func<Mutation, TQuery>> query)
         {
-            var gql = base.MakeQuery<@Model.Mutation.Name, TQuery>(query, true);
+            var gql = base.MakeQuery<Mutation, TQuery>(query, true);
             return await ProcessResult<TQuery>(gql);
         }
     }

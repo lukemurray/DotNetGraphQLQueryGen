@@ -72,12 +72,12 @@ Type: type
         [Fact]
         public void MethodWithScalarReturn()
         {
-            var client = new ClientForCustomQuery<ICustomRootQuery>();
+            var client = new TestClient();
             var query = client.MakeQuery(_ => new {
                 displayName = _.GetDisplayName(1)
             });
             Assert.Equal($@"query BaseGraphQLClient {{
-displayName: GetDisplayName(id: 1)
+displayName: getDisplayName(id: 1)
 }}", query.Query, ignoreLineEndingDifferences: true);
         }
 
@@ -219,14 +219,5 @@ LastName: lastName
     public class MyResult
     {
         public List<MovieResult> Movies { get; set; }
-    }
-
-    public class ClientForCustomQuery<TRootQuery>: TestHttpClient
-    {
-        public QueryRequest MakeQuery<TReturn>(Expression<Func<TRootQuery, TReturn>> exp) => base.MakeQuery<TRootQuery, TReturn>(exp);
-    }
-
-    public interface ICustomRootQuery {
-        string GetDisplayName(int id);
     }
 }

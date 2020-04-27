@@ -66,7 +66,9 @@ namespace @Model.Namespace
     }
     else
     {
-        if (gqlType != Model.Mutation)
+        var shortcutOutput = field.OutputMethodSignature(true, false);
+
+        @if (gqlType != Model.Mutation && shortcutOutput != null)
         {
         @:/// <summary>
         @if (!string.IsNullOrEmpty(field.Description))
@@ -77,7 +79,7 @@ namespace @Model.Namespace
         @:/// This shortcut will return a selection of all fields
         @:/// </summary>
         @:[GqlFieldName("@field.Name")]
-        @:@field.DotNetType @(field.DotNetName)();
+        @field.OutputMethodSignature(true, false)
         }
 
         @:/// <summary>
@@ -88,7 +90,7 @@ namespace @Model.Namespace
         @:/// </summary>
         @:/// <param name="selection">Projection of fields to select from the object</param>
         @:[GqlFieldName("@field.Name")]
-        @field.OutputMethodSig()
+        @field.OutputMethodSignature(false, true)
     }
 }
     @:}

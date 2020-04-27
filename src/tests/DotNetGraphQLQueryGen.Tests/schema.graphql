@@ -29,6 +29,8 @@ type RootQuery {
 	writers: [Person]
 	"List of producers with filter support"
 	producers(filter: FilterBy): [Person]
+	"Testing returning a scalar"
+	getDisplayName(id: Int!): String
 }
 
 input FilterBy {

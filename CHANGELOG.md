@@ -1,3 +1,7 @@
+# 0.3.0
+- Support generating from the GraphQL endpoint with schema introspection query or from a JSON saved result of the query
+- Better support for fields that return a scalar but have arguments - no selection argument generated
+
 # 0.2.0
 - Fixed issues with enum support
 - Better support for fields/mutations that take arrays as arguments

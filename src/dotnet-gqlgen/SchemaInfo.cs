@@ -114,6 +114,13 @@ namespace dotnet_gqlgen
         public string Name { get; set; }
         public string TypeName { get; set; }
         public bool IsArray { get; set; }
+        public bool IsScalar
+        {
+            get
+            {
+                return (!schemaInfo.Types.ContainsKey(TypeName) && !schemaInfo.Inputs.ContainsKey(TypeName)) || schemaInfo.Scalars.Contains(TypeName);
+            }
+        }
         public bool IsNonNullable { get; set; }
         public List<Arg> Args { get; set; }
         public string Description { get; set; }
@@ -155,24 +162,40 @@ namespace dotnet_gqlgen
             }
         }
 
-        public string OutputMethodSig()
+        /// <summary>
+        /// Outputs the method signature with all arguments and a object selection argument if applicable
+        /// </summary>
+        /// <returns></returns>
+        public string OutputMethodSignature(bool onlyRequiredArgs, bool withSlection)
         {
+            // if we are not outputing withSlection and have only required args and return a
+            // scalar, skip it otherwise we'll have duplicate method
+            if (!withSlection && IsScalar && Args.All(a => a.Required))
+                return null;
+
+            var typeName = !withSlection ? TypeName : "TReturn";
+
             var sb = new StringBuilder("        ");
-            sb.Append(IsArray ? "List<TReturn> " : "TReturn ");
-            sb.Append(DotNetName).Append("<TReturn>(");
-            sb.Append(ArgsOutput());
-            if (Args.Count > 0)
-                sb.Append(", ");
-            sb.AppendLine($"Expression<Func<{DotNetTypeSingle}, TReturn>> selection);");
+            sb.Append(IsScalar ? $"{TypeName} " : IsArray ? $"List<{typeName}> " : $"{typeName} ");
+            sb.Append(DotNetName).Append(IsScalar || !withSlection ? "(" : $"<{typeName}>(");
+            var argsOut = ArgsOutput(onlyRequiredArgs);
+            sb.Append(argsOut);
+            if (withSlection && !IsScalar)
+            {
+                if (argsOut.Length > 0)
+                    sb.Append(", ");
+                sb.Append($"Expression<Func<{DotNetTypeSingle}, TReturn>> selection");
+            }
+            sb.AppendLine($");");
 
             return sb.ToString();
         }
 
-        public string ArgsOutput()
+        public string ArgsOutput(bool onlyRequiredArgs)
         {
             if (!Args.Any())
                 return "";
-            var result = string.Join(", ", Args.Select(a => $"{(a.Required ? a.DotNetType.Trim('?') : a.DotNetType)} {a.Name}"));
+            var result = string.Join(", ", Args.Where(a => !onlyRequiredArgs || a.Required).Select(a => $"{(a.Required ? a.DotNetType.Trim('?') : a.DotNetType)} {a.Name}"));
             return result;
         }
 

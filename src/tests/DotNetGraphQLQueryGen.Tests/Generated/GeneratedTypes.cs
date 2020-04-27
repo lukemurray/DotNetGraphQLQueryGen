@@ -7,7 +7,7 @@ using DotNetGqlClient;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on 4/22/2020 12:54:36 AM from ..\tests\DotNetGraphQLQueryGen.Tests\schema.graphql -n Generated -c TestHttpClient -m Date=DateTime
+/// Generated on 27/4/20 6:46:47 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql -n Generated -c TestHttpClient -m Date=DateTime
 /// </summary>
 
 namespace Generated
@@ -67,7 +67,7 @@ namespace Generated
         /// This shortcut will return a selection of all fields
         /// </summary>
         [GqlFieldName("movie")]
-        Movie Movie();
+        Movie Movie(int id);
         /// <summary>
         /// Return a Movie by its Id
         /// </summary>
@@ -91,7 +91,7 @@ namespace Generated
         /// This shortcut will return a selection of all fields
         /// </summary>
         [GqlFieldName("moviesByIds")]
-        List<Movie> MoviesByIds();
+        List<Movie> MoviesByIds(List<int?> ids);
         /// <summary>
         /// </summary>
         /// <param name="selection">Projection of fields to select from the object</param>
@@ -116,7 +116,7 @@ namespace Generated
         /// This shortcut will return a selection of all fields
         /// </summary>
         [GqlFieldName("person")]
-        Person Person();
+        Person Person(int id);
         /// <summary>
         /// Return a Person by its Id
         /// </summary>
@@ -149,6 +149,12 @@ namespace Generated
         /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("producers")]
         List<TReturn> Producers<TReturn>(FilterBy filter, Expression<Func<Person, TReturn>> selection);
+        /// <summary>
+        /// Testing returning a scalar
+        /// </summary>
+        /// <param name="selection">Projection of fields to select from the object</param>
+        [GqlFieldName("getDisplayName")]
+        String GetDisplayName(int id);
     }
     public interface SubscriptionType
     {
