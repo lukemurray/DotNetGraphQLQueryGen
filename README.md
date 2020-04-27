@@ -1,6 +1,6 @@
 # dotnet GraphQL Query generator
 
-Given a GraphQL schema file, this tool will generate interfaces and classes to enable strongly typed querying from C# to a GraphQL API.
+Given a GraphQL schema file (or a GraphQL endpoint where we can do a schema introspection), this tool will generate interfaces and classes to enable strongly typed querying from C# to a GraphQL API.
 
 Example, given the following GraphQL schema
 ```
@@ -45,7 +45,7 @@ type Mutation {
 }
 ```
 
-Running `dotnet run -- schema.graphql -m Date=DateTime` will generate the following
+Running `dotnet run -- schema.graphql -m Date=DateTime` or `dotnet run -- http://myapi.app/gql -m Date=DateTime` will generate the following
 
 ```c#
 public interface RootQuery
