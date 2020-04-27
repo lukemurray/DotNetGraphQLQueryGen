@@ -13,7 +13,7 @@ namespace DotNetGqlClient
     {
         private uint argNum = 0;
         protected Dictionary<string, string> typeMappings;
-        
+
         private class MemberInitDictionary : Dictionary<string, (object, Type)> { }
 
         protected QueryRequest MakeQuery<TSchema, TQuery>(Expression<Func<TSchema, TQuery>> query, bool mutation = false)
@@ -30,7 +30,10 @@ namespace DotNetGqlClient
             if (lambda.Body.NodeType != ExpressionType.New && lambda.Body.NodeType != ExpressionType.MemberInit)
                 throw new ArgumentException($"LambdaExpression must return a NewExpression or MemberInitExpression");
 
-            GetObjectSelection(gql, lambda.Body, args, variables);
+            foreach (var selections in GetObjectSelection(lambda.Body, args, variables))
+            {
+                gql.AppendLine(selections);
+            }
 
             // prepend operationname as it may have arguments
             gql.Insert(0, $"{(mutation ? "mutation" : "query")} BaseGraphQLClient{(args.Any() ? $"({string.Join(",", args)})" : "")} {{\n");
@@ -43,7 +46,7 @@ namespace DotNetGqlClient
             };
         }
 
-        private void GetObjectSelection(StringBuilder gql, Expression exp, List<string> args, Dictionary<string, object> variables)
+        private IEnumerable<string> GetObjectSelection(Expression exp, List<string> args, Dictionary<string, object> variables)
         {
             if (exp.NodeType == ExpressionType.New)
             {
@@ -52,18 +55,22 @@ namespace DotNetGqlClient
                 {
                     var fieldVal = newExp.Arguments[i];
                     var fieldProp = newExp.Members[i];
-                    gql.AppendLine($"{fieldProp.Name}: {GetFieldSelection(fieldVal, args, variables)}");
+                    yield return $"{fieldProp.Name}: {GetFieldSelection(fieldVal, args, variables)}";
                 }
             }
-            else
+            else if (exp.NodeType == ExpressionType.MemberInit)
             {
                 var mi = (MemberInitExpression)exp;
                 for (int i = 0; i < mi.Bindings.Count; i++)
                 {
                     var valExp = ((MemberAssignment)mi.Bindings[i]).Expression;
                     var fieldVal = mi.Bindings[i].Member;
-                    gql.AppendLine($"{fieldVal.Name}: {GetFieldSelection(valExp, args, variables)}");
+                    yield return $"{fieldVal.Name}: {GetFieldSelection(valExp, args, variables)}";
                 }
+            }
+            else
+            {
+                throw new ArgumentException($"Selection {exp.NodeType} \"{exp}\" must be a NewExpression or MemberInitExpression");
             }
         }
 
@@ -117,46 +124,66 @@ namespace DotNetGqlClient
             else
                 select.Append(call.Method.Name);
 
-            if (call.Arguments.Count > 1)
+
+            IEnumerable<string> selection;
+            if (call.Arguments.Count == 0)
             {
+                selection = (call.Method.ReturnType.IsEnumerableOrArray()
+                    ? GetDefaultSelection(call.Method.ReturnType.GetGenericArguments().First())
+                    : GetDefaultSelection(call.Method.ReturnType)).ToList();
+            }
+            else
+            {
+                var selectorExp = call.Arguments.Last();
+
+                if (selectorExp.NodeType == ExpressionType.Quote)
+                    selectorExp = ((UnaryExpression)selectorExp).Operand;
+
+                if (selectorExp.NodeType == ExpressionType.Lambda)
+                    selectorExp = ((LambdaExpression)selectorExp).Body;
+                else
+                    selectorExp = null; // supposed scalar awaited as return
+
+
                 var argVals = new List<string>();
-                for (int i = 0; i < call.Arguments.Count - 1; i++)
+                var parameters = call.Method.GetParameters();
+                var arguments = call.Arguments;
+
+                var count = selectorExp != null
+                    ? arguments.Count - 1
+                    : arguments.Count;
+
+                for (int i = 0; i < count; i++)
                 {
-                    var arg = call.Arguments.ElementAt(i);
-                    var param = call.Method.GetParameters().ElementAt(i);
+                    var arg = call.Arguments[i];
+                    var param = parameters.ElementAt(i);
 
                     (object argVal, Type argType) = ArgToTypeAndValue(arg);
                     if (argVal == null)
                         continue;
 
                     argVals.Add($"{param.Name}: {ArgValToString(operationArgs, variables, param, argType, argVal)}");
-                    ;
                 };
-                if (argVals.Any())
+
+                if (argVals.Count > 0)
                     select.Append($"({string.Join(", ", argVals)})");
+
+                selection = selectorExp != null
+                    ? GetObjectSelection(selectorExp, operationArgs, variables)
+                    : Enumerable.Empty<string>();
             }
-            select.Append(" {" + Environment.NewLine);
-            if (call.Arguments.Count == 0)
+
+            var selectionArray = selection.ToArray();
+            if (selectionArray.Length > 0)
             {
-                if (call.Method.ReturnType.IsEnumerableOrArray())
+                select.Append(" {" + Environment.NewLine);
+                foreach (var line in selectionArray)
                 {
-                    select.Append(GetDefaultSelection(call.Method.ReturnType.GetGenericArguments().First()));
+                    select.AppendLine(line);
                 }
-                else
-                {
-                    select.Append(GetDefaultSelection(call.Method.ReturnType));
-                }
+                select.Append("}");
             }
-            else
-            {
-                var exp = call.Arguments.Last();
-                if (exp.NodeType == ExpressionType.Quote)
-                    exp = ((UnaryExpression)exp).Operand;
-                if (exp.NodeType == ExpressionType.Lambda)
-                    exp = ((LambdaExpression)exp).Body;
-                GetObjectSelection(select, exp, operationArgs, variables);
-            }
-            select.Append("}");
+
             return select.ToString();
         }
 
@@ -165,13 +192,10 @@ namespace DotNetGqlClient
             Type argType;
             object argVal;
 
-            if (arg.NodeType == ExpressionType.Convert)
-            {
-                arg = ((UnaryExpression)arg).Operand;
-            }
-
             switch (arg.NodeType)
             {
+                case ExpressionType.Convert:
+                    return ArgToTypeAndValue(((UnaryExpression)arg).Operand);
                 case ExpressionType.Constant:
                     var constArg = (ConstantExpression)arg;
                     argType = constArg.Type;
@@ -199,6 +223,7 @@ namespace DotNetGqlClient
                     break;
                 case ExpressionType.New:
                 case ExpressionType.NewArrayInit:
+                case ExpressionType.ListInit:
                     argVal = Expression.Lambda(arg).Compile().DynamicInvoke();
                     argType = argVal.GetType();
                     break;
@@ -248,9 +273,8 @@ namespace DotNetGqlClient
             }
         }
 
-        private static string GetDefaultSelection(Type returnType)
+        private static IEnumerable<string> GetDefaultSelection(Type returnType)
         {
-            var select = new StringBuilder();
             foreach (var field in returnType.GetProperties())
             {
                 var name = field.Name;
@@ -258,10 +282,10 @@ namespace DotNetGqlClient
                 if (attribute != null)
                     name = attribute.Name;
 
-                select.AppendLine($"{field.Name}: {name}");
+                yield return $"{field.Name}: {name}";
             }
-            return select.ToString();
         }
+
     }
 
     public class QueryRequest
