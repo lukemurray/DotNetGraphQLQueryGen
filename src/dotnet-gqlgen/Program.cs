@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
+using Newtonsoft.Json;
 using RazorLight;
 
 namespace dotnet_gqlgen
@@ -12,7 +16,7 @@ namespace dotnet_gqlgen
     {
         [Argument(0, Description = "Path the the GraphQL schema file")]
         [Required]
-        public string SchemaFile { get; }
+        public string Source { get; }
 
         [Option(LongName = "namespace", ShortName = "n", Description = "Namespace to generate code under")]
         public string Namespace { get; } = "Generated";
@@ -33,14 +37,42 @@ namespace dotnet_gqlgen
             {"bool", "Boolean!"},
         };
 
-        public static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+        public static Task<int> Main(string[] args) => CommandLineApplication.ExecuteAsync<Program>(args);
 
         private async void OnExecute()
         {
             try
             {
-                Console.WriteLine($"Loading {SchemaFile}...");
-                var schemaText = File.ReadAllText(SchemaFile);
+                Uri uriResult;
+                bool isGraphQlEndpoint = Uri.TryCreate(Source, UriKind.Absolute, out uriResult)
+                                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+                string schemaText = null;
+                bool isIntroSpectionFile = false;
+
+                if (isGraphQlEndpoint)
+                {
+                    using(var httpClient = new HttpClient())
+                    {
+
+                        Dictionary<string, string> request = new Dictionary<string, string>();
+                        request["query"] = IntroSpectionQuery.Query;
+                        request["operationName"] = "IntrospectionQuery";
+
+                        var response = httpClient
+                            .PostAsync(Source, 
+                            new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
+
+                        schemaText = await response.Content.ReadAsStringAsync();
+                        isIntroSpectionFile = true;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Loading {Source}...");
+                    schemaText = File.ReadAllText(Source);
+                    isIntroSpectionFile = Path.GetExtension(Source).Equals(".json", StringComparison.OrdinalIgnoreCase);
+                }                
 
                 var mappings = new Dictionary<string, string>();
                 if (!string.IsNullOrEmpty(ScalarMapping))
@@ -52,7 +84,10 @@ namespace dotnet_gqlgen
                 }
 
                 // parse into AST
-                var typeInfo = SchemaCompiler.Compile(schemaText, mappings);
+                var typeInfo = !isIntroSpectionFile ?
+                    SchemaCompiler.Compile(schemaText, mappings) :
+                    IntrospectionCompiler.Compile(schemaText, mappings);
+
 
                 Console.WriteLine($"Generating types in namespace {Namespace}, outputting to {ClientClassName}.cs");
 
@@ -67,7 +102,7 @@ namespace dotnet_gqlgen
                 string result = await engine.CompileRenderAsync("types.cshtml", new
                 {
                     Namespace = Namespace,
-                    SchemaFile = SchemaFile,
+                    SchemaFile = Source,
                     Types = allTypes,
                     Enums = typeInfo.Enums,
                     Mutation = typeInfo.Mutation,
@@ -79,7 +114,7 @@ namespace dotnet_gqlgen
                 result = await engine.CompileRenderAsync("client.cshtml", new
                 {
                     Namespace = Namespace,
-                    SchemaFile = SchemaFile,
+                    SchemaFile = Source,
                     Query = typeInfo.Query,
                     Mutation = typeInfo.Mutation,
                     ClientClassName = ClientClassName,
