@@ -14,9 +14,12 @@ namespace dotnet_gqlgen
 {
     public class Program
     {
-        [Argument(0, Description = "Path the the GraphQL schema file")]
+        [Argument(0, Description = "Path to the GraphQL schema file or a GraphQL introspection endpoint")]
         [Required]
         public string Source { get; }
+
+        [Option(LongName = "header", ShortName = "h", Description = "Headers to pass to GraphQL introspection endpoint. Use \"Authorization=Bearer eyJraWQ,X-API-Key=abc,...\"")]
+        public string HeaderValues { get; }
 
         [Option(LongName = "namespace", ShortName = "n", Description = "Namespace to generate code under")]
         public string Namespace { get; } = "Generated";
@@ -52,8 +55,13 @@ namespace dotnet_gqlgen
 
                 if (isGraphQlEndpoint)
                 {
-                    using(var httpClient = new HttpClient())
+                    Console.WriteLine($"Loading from {Source}...");
+                    using (var httpClient = new HttpClient())
                     {
+                        foreach (var header in SplitMultiValueArgument(HeaderValues))
+                        {
+                            httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+                        }
 
                         Dictionary<string, string> request = new Dictionary<string, string>();
                         request["query"] = IntroSpectionQuery.Query;
@@ -77,9 +85,9 @@ namespace dotnet_gqlgen
                 var mappings = new Dictionary<string, string>();
                 if (!string.IsNullOrEmpty(ScalarMapping))
                 {
-                    ScalarMapping.Split(',').Select(s => s.Split('=')).ToList().ForEach(i => {
-                        dotnetToGqlTypeMappings[i[1]] = i[0];
-                        mappings[i[0]] = i[1];
+                    SplitMultiValueArgument(ScalarMapping).ToList().ForEach(i => {
+                        dotnetToGqlTypeMappings[i.Value] = i.Key;
+                        mappings[i.Key] = i.Value;
                     });
                 }
 
@@ -87,7 +95,6 @@ namespace dotnet_gqlgen
                 var typeInfo = !isIntroSpectionFile ?
                     SchemaCompiler.Compile(schemaText, mappings) :
                     IntrospectionCompiler.Compile(schemaText, mappings);
-
 
                 Console.WriteLine($"Generating types in namespace {Namespace}, outputting to {ClientClassName}.cs");
 
@@ -128,6 +135,24 @@ namespace dotnet_gqlgen
             {
                 Console.WriteLine("Error: " + e.ToString());
             }
+        }
+
+        /// <summary>
+        /// Splits an argument value like "value1=v1,value2=v2" into a dictionary.
+        /// </summary>
+        /// <remarks>Very simple splitter. Eg can't handle comma's or equal signs in values</remarks>
+        private Dictionary<string, string> SplitMultiValueArgument(string arg)
+        {
+            if (string.IsNullOrEmpty(arg))
+            {
+                return new Dictionary<string, string>();
+            }
+
+            return arg
+                .Split(',')
+                .Select(h => h.Split('='))
+                .Where(hs => hs.Length >= 2)
+                .ToDictionary(key => key[0], value => value[1]);
         }
     }
 }

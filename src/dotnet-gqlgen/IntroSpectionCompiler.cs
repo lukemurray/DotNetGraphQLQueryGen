@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,17 +26,28 @@ namespace dotnet_gqlgen
         /// </summary>
         private readonly string omitTypeRegex = "^__|CacheControlScope";
 
-        public static SchemaInfo Compile(string introSpectionText, Dictionary<string, string> typeMappings = null)
+        private class IntrospectionResult
         {
-            var root = JObject.Parse(introSpectionText);
-            return new IntrospectionCompiler().ParseSchema(root, typeMappings);
+            public JToken Data { get; set; }
+            public string Error { get; set; }
+            public string Message { get; set; }
         }
 
-        private SchemaInfo ParseSchema(JToken root, Dictionary<string, string> typeMappings)
+        public static SchemaInfo Compile(string introSpectionText, Dictionary<string, string> typeMappings = null)
+        {
+            var result = JsonConvert.DeserializeObject<IntrospectionResult>(introSpectionText);
+            if (!string.IsNullOrEmpty(result?.Error))
+            {
+                throw new Exception(result.Message ?? result.Error);
+            }
+            return new IntrospectionCompiler().ParseSchema(result?.Data, typeMappings);
+        }
+
+        private SchemaInfo ParseSchema(JToken data, Dictionary<string, string> typeMappings)
         {
             var schemaInfo = new SchemaInfo(typeMappings);
 
-            var schema = root?["data"]?["__schema"];
+            var schema = data?["__schema"];
             if (schema != null)
             {
                 // Extract operation types from the schema and add to the schema info
