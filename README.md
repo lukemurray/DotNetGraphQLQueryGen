@@ -202,7 +202,7 @@ var result = await client.QueryAsync(q => new {
 
 This looks similar to the GraphQL. And now `result.Data` is a strongly type object with the expected types.
 
-If a field in the schema is an object (can have a selection protected on to it) it will be exposed in the generated code as a method where you pass in any field arguments first and then the selection.
+If a field in the schema is an object (can have a selection performed on it) it will be exposed in the generated code as a method where you pass in any field arguments first and then the selection.
 
 The GraphQL created by the above will look like this:
 ```
