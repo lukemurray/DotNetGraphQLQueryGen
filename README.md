@@ -55,7 +55,7 @@ To generate from a live GraphQL server (*note:* introspection may not be support
 
 For all command line options, use --help or -?
 
-Both commands will generate the files [GraphQLClient.cs](#graphqlclient) and [GeneratedTypes.cs](#generatedtypes.cs).
+Both commands will generate the files [GraphQLClient.cs](#graphqlclient.cs) and [GeneratedTypes.cs](#generatedtypes.cs).
 
 ### GeneratedTypes.cs
 Based on the example schema.graphql the `GeneratedTypes.cs` file will have the following content:
@@ -147,7 +147,7 @@ public interface Mutation
 }
 ```
 
-### GraphQLClient
+### GraphQLClient.cs
 
 The generated `GraphQLClient` class instance acts as a session to send GraphQL requests.
 
@@ -156,7 +156,7 @@ var httpClient = new HttpClient { BaseAddress = new Uri("http://myapi.app/gql") 
 var client = new GraphQLClient(httpClient);
 ```
 
-For customer headers like Authorization, configure them in the HttpClient. These will be used during the requests.
+For custom headers like Authorization, configure them in the HttpClient. These will be used during the requests.
 ```c#
 var httpClient = new HttpClient { BaseAddress = new Uri("http://myapi.app/") };
 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "eyAf3s...");
