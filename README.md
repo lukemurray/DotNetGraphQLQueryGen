@@ -2,7 +2,7 @@
 
 Given a GraphQL schema file (or a GraphQL endpoint where we can do a schema introspection), this tool will generate interfaces and classes to enable strongly typed querying from C# to a GraphQL API.
 
-Example, given the following GraphQL schema
+Example GraphQL schema
 ```
 schema {
     query: Query
@@ -12,7 +12,7 @@ schema {
 scalar Date
 
 type Query {
-]	actors: [Person]
+	actors: [Person]
 	directors: [Person]
 	movie(id: Int!): Movie
 	movies: [Movie]
@@ -45,7 +45,20 @@ type Mutation {
 }
 ```
 
-Running `dotnet run -- schema.graphql -m Date=DateTime` or `dotnet run -- http://myapi.app/gql -m Date=DateTime` will generate the following
+## Query Generator Command
+
+To generate from a graphql schema file:\
+&nbsp;&nbsp;&nbsp; `dotnet run -- schema.graphql -m Date=DateTime`
+
+To generate from a live GraphQL server (*note:* introspection may not be supported or enabled on your server):\
+&nbsp;&nbsp;&nbsp; `dotnet run -- http://myapi.app/gql -m Date=DateTime -h "Authorization=Bearer eyAfd..."`
+
+For all command line options, use --help or -?
+
+Both commands will generate the files [GraphQLClient.cs](#graphqlclient) and [GeneratedTypes.cs](#generatedtypes.cs).
+
+### GeneratedTypes.cs
+Based on the example schema.graphql the `GeneratedTypes.cs` file will have the following content:
 
 ```c#
 public interface RootQuery
@@ -134,12 +147,43 @@ public interface Mutation
 }
 ```
 
-It also generates a `GraphQLClient` class that will work for an unauthenticated API. You can modify that class to implement the authentication you may need. `GraphQLClient` exposes 2 methods, `async Task<GqlResult<TQuery>> QueryAsync<TQuery>(Expression<Func<RootQuery, TQuery>> query)` for queries and `async Task<GqlResult<TQuery>> MutateAsync<TQuery>(Expression<Func<Mutation, TQuery>> query)` for mutations.
+### GraphQLClient
 
-Example usage
+The generated `GraphQLClient` class instance acts as a session to send GraphQL requests.
 
 ```c#
-var client = new GraphQLClient();
+var httpClient = new HttpClient { BaseAddress = new Uri("http://myapi.app/gql") };
+var client = new GraphQLClient(httpClient);
+```
+
+For customer headers like Authorization, configure them in the HttpClient. These will be used during the requests.
+```c#
+var httpClient = new HttpClient { BaseAddress = new Uri("http://myapi.app/") };
+httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "eyAf3s...");
+
+var client = new GraphQLClient(new Uri("gql", UriKind.Relative), httpClient);
+```
+
+To use the GraphQLClient, copy the following files into your project:
+1. GraphQLClient.cs
+2. GeneratedTypes.cs
+3. BaseGraphQLClient.cs
+4. GqlFieldNameAttribute.cs
+
+
+## Request Methods
+
+`GraphQLClient` exposes 2 methods:
+
+* [Query](#query)\
+  `async Task<GqlResult<TQuery>> QueryAsync<TQuery>(Expression<Func<RootQuery, TQuery>> query)`
+* [Mutation](#mutation)\
+  `async Task<GqlResult<TQuery>> MutateAsync<TQuery>(Expression<Func<Mutation, TQuery>> query)`
+
+### Query
+
+```c#
+// queries
 var result = await client.QueryAsync(q => new {
     Movie = q.Movie(2, m => new {
         m.Id,
@@ -160,7 +204,7 @@ This looks similar to the GraphQL. And now `result.Data` is a strongly type obje
 
 If a field in the schema is an object (can have a selection protected on to it) it will be exposed in the generated code as a method where you pass in any field arguments first and then the selection.
 
-The GraphQL created by the above will look like this
+The GraphQL created by the above will look like this:
 ```
 {
     query {
@@ -180,7 +224,7 @@ The GraphQL created by the above will look like this
 }
 ```
 
-## Mutations
+### Mutations
 
 Mutations look very similar to the above query, just as they do in GraphQL. The above schema had one mutation that can be called like so
 
@@ -191,10 +235,10 @@ var mutationResult = await client.MutateAsync(m => new {
 });
 ```
 
-`m` is the `Mutation` type interface and lets you call any of the mutations generated from the schema. Like a query, you create a new anaoymous object and call as many mutations as you wish. Each mutation method has all their arguments and the last one is a selection query on the mutation's return type.
+`m` is the `Mutation` type interface and lets you call any of the mutations generated from the schema. Like a query, you create a new anonymous object and call as many mutations as you wish. Each mutation method has all their arguments and the last one is a selection query on the mutation's return type.
 
 The above has `mutationResult` strongly typed. E.g. `mutationResult.Data.NewPerson` will only have an `Id` field.
 
 ## Input types
 
-Any input types are generated as actual `class`es as the are used as arguments. The `-m Date=DateTime` tells the tool that the `scalar` type `Date` should be the `DateTime` type in C#. You can use this to support any other custom `scalar` types. E.g. `-m Date=DateTime,Point=PointF`, just comma seperate a `GqlScalar=DotnetType` list.
+Any input types are generated as actual `class`es as the are used as arguments. The `-m Date=DateTime` tells the tool that the `scalar` type `Date` should be the `DateTime` type in C#. You can use this to support any other custom `scalar` types. E.g. `-m Date=DateTime,Point=PointF`, just comma separate a `GqlScalar=DotnetType` list.
