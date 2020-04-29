@@ -31,6 +31,7 @@ type RootQuery {
 	producers(filter: FilterBy): [Person]
 	"Testing returning a scalar"
 	getDisplayName(id: Int!): String
+	deleteUser(id: Int!): Int
 }
 
 input FilterBy {

@@ -70,26 +70,9 @@ namespace @Model.Namespace
 
         @if (gqlType != Model.Mutation && shortcutOutput != null)
         {
-        @:/// <summary>
-        @if (!string.IsNullOrEmpty(field.Description))
-        {
-        @field.DescriptionForComment()
-        @:///
-        }
-        @:/// This shortcut will return a selection of all fields
-        @:/// </summary>
-        @:[GqlFieldName("@field.Name")]
         @field.OutputMethodSignature(true, false)
         }
 
-        @:/// <summary>
-        @if (!string.IsNullOrEmpty(field.Description))
-        {
-        @field.DescriptionForComment()
-        }
-        @:/// </summary>
-        @:/// <param name="selection">Projection of fields to select from the object</param>
-        @:[GqlFieldName("@field.Name")]
         @field.OutputMethodSignature(false, true)
     }
 }

@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on 27/4/20 6:46:47 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql
+/// Generated on 29/4/20 10:18:29 am from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql
 /// </summary>
 
 namespace Generated

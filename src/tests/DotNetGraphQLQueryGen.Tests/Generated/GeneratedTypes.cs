@@ -7,7 +7,7 @@ using DotNetGqlClient;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on 27/4/20 6:46:47 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql -n Generated -c TestHttpClient -m Date=DateTime
+/// Generated on 29/4/20 10:18:28 am from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql -n Generated -c TestHttpClient -m Date=DateTime
 /// </summary>
 
 namespace Generated
@@ -152,9 +152,12 @@ namespace Generated
         /// <summary>
         /// Testing returning a scalar
         /// </summary>
-        /// <param name="selection">Projection of fields to select from the object</param>
         [GqlFieldName("getDisplayName")]
-        String GetDisplayName(int id);
+        string GetDisplayName(int id);
+        /// <summary>
+        /// </summary>
+        [GqlFieldName("deleteUser")]
+        int? DeleteUser(int id);
     }
     public interface SubscriptionType
     {

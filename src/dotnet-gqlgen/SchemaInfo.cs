@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,7 +50,7 @@ namespace dotnet_gqlgen
         {
             get
             {
-                var typeName = Schema.First(f => f.Name == "mutation")?.TypeName;
+                var typeName = Schema.FirstOrDefault(f => f.Name == "mutation")?.TypeName;
                 if (typeName != null)
                     return Types[typeName];
                 return null;
@@ -166,28 +167,49 @@ namespace dotnet_gqlgen
         /// Outputs the method signature with all arguments and a object selection argument if applicable
         /// </summary>
         /// <returns></returns>
-        public string OutputMethodSignature(bool onlyRequiredArgs, bool withSlection)
+        public string OutputMethodSignature(bool onlyRequiredArgs, bool withSelection)
         {
-            // if we are not outputing withSlection and have only required args and return a
+            // if we are not outputing withSelection and have only required args and return a
             // scalar, skip it otherwise we'll have duplicate method
-            if (!withSlection && IsScalar && Args.All(a => a.Required))
+            if (!withSelection && IsScalar && Args.All(a => a.Required))
                 return null;
 
-            var typeName = !withSlection ? TypeName : "TReturn";
+            var typeName = !withSelection ? DotNetTypeSingle : "TReturn";
 
             var sb = new StringBuilder("        ");
-            sb.Append(IsScalar ? $"{TypeName} " : IsArray ? $"List<{typeName}> " : $"{typeName} ");
-            sb.Append(DotNetName).Append(IsScalar || !withSlection ? "(" : $"<{typeName}>(");
+            sb.Append(IsScalar ? $"{DotNetType} " : IsArray ? $"List<{typeName}> " : $"{typeName} ");
+            sb.Append(DotNetName).Append(IsScalar || !withSelection ? "(" : $"<{typeName}>(");
             var argsOut = ArgsOutput(onlyRequiredArgs);
             sb.Append(argsOut);
-            if (withSlection && !IsScalar)
+            if (withSelection && !IsScalar)
             {
                 if (argsOut.Length > 0)
                     sb.Append(", ");
                 sb.Append($"Expression<Func<{DotNetTypeSingle}, TReturn>> selection");
             }
+            sb.Insert(0, BuildCommentDoc(withSelection));
+
             sb.AppendLine($");");
 
+            return sb.ToString();
+        }
+
+        private string BuildCommentDoc(bool withSelection)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("        /// <summary>");
+            if (Description != null)
+                sb.Append($"{DescriptionForComment(8)}");
+            if (!IsScalar && !withSelection)
+            {
+                if (Description != null)
+                    sb.AppendLine($"        ///");
+                sb.AppendLine($"        /// This shortcut will return a selection of all fields");
+            }
+            sb.AppendLine("        /// </summary>");
+            if (!IsScalar && withSelection)
+                sb.AppendLine(@"        /// <param name=""selection"">Projection of fields to select from the object</param>");
+            sb.AppendLine($"        [GqlFieldName(\"{Name}\")]");
             return sb.ToString();
         }
 

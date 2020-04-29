@@ -23,7 +23,7 @@ namespace DotNetGraphQLQueryGen.Tests
             var queryTypeName = results.Schema.First(s => s.Name == "query").TypeName;
 
             var queryType = results.Types[queryTypeName];
-            Assert.Equal(11, queryType.Fields.Count);
+            Assert.Equal(12, queryType.Fields.Count);
             Assert.Equal("actors", queryType.Fields.ElementAt(1).Name);
             Assert.Equal("Person", queryType.Fields.ElementAt(1).TypeName);
             Assert.True(queryType.Fields.ElementAt(1).IsArray);
