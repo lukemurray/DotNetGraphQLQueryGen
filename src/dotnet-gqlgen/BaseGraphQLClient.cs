@@ -201,13 +201,29 @@ namespace DotNetGqlClient
                     argType = constArg.Type;
                     argVal = constArg.Value;
                     break;
-                case ExpressionType.MemberAccess:
-                    var ma = (MemberExpression)arg;
-                    var ce = (ConstantExpression)ma.Expression;
-                    argType = ma.Type;
-                    argVal = ma.Member.MemberType == MemberTypes.Field
-                        ? ((FieldInfo)ma.Member).GetValue(ce.Value)
-                        : ((PropertyInfo)ma.Member).GetValue(ce.Value);
+                case ExpressionType.MemberAccess when ((MemberExpression)arg).Expression is ConstantExpression ce:
+                    var mac = (MemberExpression)arg;
+                    argType = mac.Type;
+                    argVal = mac.Member.MemberType == MemberTypes.Field
+                        ? ((FieldInfo)mac.Member).GetValue(ce.Value)
+                        : ((PropertyInfo)mac.Member).GetValue(ce.Value);
+                    break;
+                case ExpressionType.MemberAccess when ((MemberExpression)arg).Expression.GetType().Name == "FieldExpression":
+                    var maf = (MemberExpression)arg;
+                    var fieldName = maf.Member.Name;
+                    (object fieldVal, Type fieldType) = ArgToTypeAndValue(maf.Expression);
+                    if (maf.Member.MemberType == MemberTypes.Field)
+                    {
+                        FieldInfo fi = fieldType.GetField(fieldName);
+                        argType = fi.FieldType;
+                        argVal = fi.GetValue(fieldVal);
+                    }
+                    else
+                    {
+                        PropertyInfo pi = fieldType.GetProperty(fieldName);
+                        argType = pi.PropertyType;
+                        argVal = pi.GetValue(fieldVal);
+                    }
                     break;
                 case ExpressionType.MemberInit:
                     var memberInitDict = new MemberInitDictionary();
