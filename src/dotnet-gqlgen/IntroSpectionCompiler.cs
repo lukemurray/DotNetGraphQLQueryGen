@@ -88,7 +88,7 @@ namespace dotnet_gqlgen
                 switch (kind)
                 {
                     case "ENUM":
-                        schemaInfo.Enums.Add(name, type["enumValues"].Select(e => e.ReadName()).ToList());
+                        schemaInfo.Enums.Add(name, type["enumValues"].Select(e => new EnumInfo(e.ReadName())).ToList());
                         break;
 
                     case "SCALAR":
