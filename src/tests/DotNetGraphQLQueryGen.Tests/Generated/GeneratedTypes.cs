@@ -7,12 +7,18 @@ using DotNetGqlClient;
 /// <summary>
 /// Generated interfaces for making GraphQL API calls with a typed interface.
 ///
-/// Generated on 29/4/20 10:18:28 am from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql -n Generated -c TestHttpClient -m Date=DateTime
+/// Generated on 9/5/20 1:58:19 pm from ../tests/DotNetGraphQLQueryGen.Tests/schema.graphql -n Generated -c TestHttpClient -m Date=DateTime
 /// </summary>
 
 namespace Generated
 {
 
+    public enum Sex {
+        [GqlFieldName("Female")]
+        Female,
+        [GqlFieldName("Male")]
+        Male,
+    }
 
     public interface RootQuery
     {

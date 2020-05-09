@@ -19,7 +19,7 @@ int         : '-'? DIGIT+;
 decimal     : '-'? DIGIT+'.'DIGIT+;
 boolean     : TRUE | FALSE;
 string      : '"' ( '"' | ~('\n'|'\r') | STRING_CHARS )*? '"';
-constant    : string | int | decimal | boolean | id; // NAME should be an enum
+constant    : string | int | decimal | boolean | id; // id should be an enum
 
 // This is our expression language
 schema      : (schemaDef | typeDef | scalarDef | inputDef | enumDef)+;

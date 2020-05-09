@@ -5,6 +5,11 @@ schema {
 
 scalar Date
 
+enum Sex {
+	Female
+	Male
+}
+
 type RootQuery {
 	""" Returns list of actors paged
 		@param page Page number to return [defaults: page = 1]
