@@ -20,10 +20,11 @@ namespace @Model.Namespace
 @foreach(var kvp in Model.Enums)
 {
     @:public enum @kvp.Key {
-        @foreach(var field in kvp.Value)
-        {
-            @:@field,
-        }
+    @foreach(var field in kvp.Value)
+    {
+        @:[GqlFieldName("@field.Name")]
+        @:@field.DotNetName,
+    }
     @:}
 }
 

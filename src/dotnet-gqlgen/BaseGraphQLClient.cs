@@ -200,6 +200,11 @@ namespace DotNetGqlClient
                     var constArg = (ConstantExpression)arg;
                     argType = constArg.Type;
                     argVal = constArg.Value;
+                    if (argType.IsEnum)
+                    {
+                        var attr = arg.Type.GetField(Enum.GetName(arg.Type, constArg.Value)).GetCustomAttributes<GqlFieldNameAttribute>().FirstOrDefault();
+                        argVal = attr?.Name ?? argVal;
+                    }
                     break;
                 case ExpressionType.MemberAccess when ((MemberExpression)arg).Expression is ConstantExpression ce:
                     var mac = (MemberExpression)arg;

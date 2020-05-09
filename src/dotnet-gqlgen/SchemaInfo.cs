@@ -33,7 +33,7 @@ namespace dotnet_gqlgen
             Schema = new List<Field>();
             Types = new Dictionary<string, TypeInfo>();
             Inputs = new Dictionary<string, TypeInfo>();
-            Enums = new Dictionary<string, List<string>>();
+            Enums = new Dictionary<string, List<EnumInfo>>();
             Scalars = new List<string>();
         }
 
@@ -58,7 +58,7 @@ namespace dotnet_gqlgen
         }
         public Dictionary<string, TypeInfo> Types { get; }
         public Dictionary<string, TypeInfo> Inputs { get; }
-        public Dictionary<string, List<string>> Enums { get; set; }
+        public Dictionary<string, List<EnumInfo>> Enums { get; set; }
         public List<string> Scalars { get; }
 
         internal bool HasDotNetType(string typeName)
@@ -81,6 +81,18 @@ namespace dotnet_gqlgen
             return Enums.ContainsKey(typeName);
         }
     }
+
+    public class EnumInfo
+    {
+        public EnumInfo(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; }
+        public string DotNetName => Name[0].ToString().ToUpper() + string.Join("", Name.Skip(1));
+    }
+
 
     public class TypeInfo
     {
@@ -112,7 +124,7 @@ namespace dotnet_gqlgen
             Args = new List<Arg>();
             this.schemaInfo = schemaInfo;
         }
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
         public string TypeName { get; set; }
         public bool IsArray { get; set; }
         public bool IsScalar
@@ -234,5 +246,11 @@ namespace dotnet_gqlgen
         }
 
         public bool Required { get; set; }
+
+        public override string Name
+        {
+            get => CSharpKeywords.EscapeIdentifier(base.Name);
+            set => base.Name = value;
+        }
     }
 }

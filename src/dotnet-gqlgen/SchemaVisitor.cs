@@ -84,7 +84,7 @@ namespace dotnet_gqlgen
             using (new FieldConsumer(this, fields))
             {
                 var result = base.VisitEnumDef(context);
-                schemaInfo.Enums.Add(context.typeName.GetText(), fields.Select(f => f.Name).ToList());
+                schemaInfo.Enums.Add(context.typeName.GetText(), fields.Select(f => new EnumInfo(f.Name)).ToList());
                 return result;
             }
         }
