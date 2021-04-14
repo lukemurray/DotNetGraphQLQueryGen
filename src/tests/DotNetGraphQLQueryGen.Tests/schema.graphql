@@ -110,11 +110,13 @@ type PersonPagination {
 	pageCount: Int!
 	"collection of people"
 	people: [Person!]
+	y: Int! # make sure we support single char field names
 }
 
 input Detail {
 	description: String!,
 	someNumber: Int = 9
+	x: Float!
 }
 
 type Mutation {

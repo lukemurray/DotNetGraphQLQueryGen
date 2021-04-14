@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>dotnet_gqlgen</RootNamespace>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <PackageVersion>0.2.0</PackageVersion>
+    <PackageVersion>0.4.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="types.cshtml" />
+    <EmbeddedResource Include="queryTypes.cshtml" />
+    <EmbeddedResource Include="resultTypes.cshtml" />
     <EmbeddedResource Include="client.cshtml" />
   </ItemGroup>
 

@@ -1,44 +1,45 @@
 grammar GraphQLSchema;
 
-DIGIT       : [0-9];
-STRING_CHARS: [a-zA-Z0-9 \t`~!@#$%^&*()_+={}|\\:\"'\u005B\u005D;<>?,./-];
+// this is a simple way to allow keywords as idents
+idKeyword   : ENUM | INPUT | SCALAR | TYPE | EXTEND | SCHEMA | FALSE | TRUE | ID;
+
 TRUE        : 'true';
 FALSE       : 'false';
-SCHEMA      : 'schema';
 EXTEND      : 'extend';
+SCHEMA      : 'schema';
 TYPE        : 'type';
 SCALAR      : 'scalar';
 INPUT       : 'input';
 ENUM        : 'enum';
-ID        : [a-z_A-Z] [a-z_A-Z0-9-]*;
+ID          : [a-z_A-Z] [a-z_A-Z0-9-]*;
 
-// this is a simple way to allow keywords as idents
-id        : ID | ENUM | INPUT | SCALAR | TYPE | EXTEND | SCHEMA | FALSE | TRUE;
+DIGIT       : [0-9];
+STRING_CHARS: [a-zA-Z0-9 \t`~!@#$%^&*()_+={}|\\:\"'\u005B\u005D;<>?,./-];
 
 int         : '-'? DIGIT+;
 decimal     : '-'? DIGIT+'.'DIGIT+;
 boolean     : TRUE | FALSE;
 string      : '"' ( '"' | ~('\n'|'\r') | STRING_CHARS )*? '"';
-constant    : string | int | decimal | boolean | id; // id should be an enum
+constant    : string | int | decimal | boolean | idKeyword; // id should be an enum
 
 // This is our expression language
 schema      : (schemaDef | typeDef | scalarDef | inputDef | enumDef)+;
 
 schemaDef   : comment* SCHEMA ws* objectDef;
-typeDef     : comment* (EXTEND ws*)? TYPE ws+ typeName=id ws* objectDef;
-scalarDef   : comment* SCALAR ws+ typeName=id ws+;
-inputDef    : comment* INPUT ws+ typeName=id ws* '{' ws* inputFields ws* comment* ws* '}' ws*;
-enumDef     : comment* ENUM ws+ typeName=id ws* '{' (ws* enumItem ws* comment* ws*)+ '}' ws*;
+typeDef     : comment* (EXTEND ws+)? TYPE ws+ typeName=idKeyword ws* objectDef;
+scalarDef   : comment* SCALAR ws+ typeName=idKeyword ws+;
+inputDef    : comment* INPUT ws+ typeName=idKeyword ws* '{' ws* inputFields ws* comment* ws* '}' ws*;
+enumDef     : comment* ENUM ws+ typeName=idKeyword ws* '{' (ws* enumItem ws* comment* ws*)+ '}' ws*;
 
 inputFields : fieldDef (ws* '=' ws* constant)? (ws* ',')? (ws* fieldDef (ws* '=' ws* constant)? (ws* ',')?)* ws*;
 objectDef   : '{' ws* fieldDef (ws* ',')? (ws* fieldDef (ws* ',')?)* ws* comment* ws* '}' ws*;
 
-fieldDef    : comment* name=id ('(' args=arguments ')')? ws* ':' ws* type=dataType;
-enumItem    : comment* name=id (ws* '.')?;
+fieldDef    : comment* name=idKeyword ('(' args=arguments ')')? ws* ':' ws* type=dataType;
+enumItem    : comment* name=idKeyword (ws* '.')?;
 arguments   : ws* argument (ws* '=' ws* constant)? (ws* ',' ws* argument (ws* '=' ws* constant)?)*;
-argument    : id ws* ':' ws* dataType;
+argument    : idKeyword ws* ':' ws* dataType;
 
-dataType    : (type=id required='!'? | '[' arrayType=id elementTypeRequired='!'? ']' arrayRequired='!'?);
+dataType    : type=idKeyword required='!'? | '[' arrayType=idKeyword elementTypeRequired='!'? ']' arrayRequired='!'?;
 
 comment         : ws* (singleLineDoc | multiLineDoc | ignoreComment) ws*;
 ignoreComment   : ('#' ~('\n'|'\r')*) ('\n' | '\r' | EOF);

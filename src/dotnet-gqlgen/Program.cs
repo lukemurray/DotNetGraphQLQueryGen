@@ -68,7 +68,7 @@ namespace dotnet_gqlgen
                         request["operationName"] = "IntrospectionQuery";
 
                         var response = httpClient
-                            .PostAsync(Source, 
+                            .PostAsync(Source,
                             new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
 
                         schemaText = await response.Content.ReadAsStringAsync();
@@ -80,7 +80,7 @@ namespace dotnet_gqlgen
                     Console.WriteLine($"Loading {Source}...");
                     schemaText = File.ReadAllText(Source);
                     isIntroSpectionFile = Path.GetExtension(Source).Equals(".json", StringComparison.OrdinalIgnoreCase);
-                }                
+                }
 
                 var mappings = new Dictionary<string, string>();
                 if (!string.IsNullOrEmpty(ScalarMapping))
@@ -106,7 +106,7 @@ namespace dotnet_gqlgen
 
                 var allTypes = typeInfo.Types.Concat(typeInfo.Inputs).ToDictionary(k => k.Key, v => v.Value);
 
-                string result = await engine.CompileRenderAsync("types.cshtml", new
+                string resultTypes = await engine.CompileRenderAsync("resultTypes.cshtml", new
                 {
                     Namespace = Namespace,
                     SchemaFile = Source,
@@ -116,9 +116,20 @@ namespace dotnet_gqlgen
                     CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping}"
                 });
                 Directory.CreateDirectory(OutputDir);
-                File.WriteAllText($"{OutputDir}/GeneratedTypes.cs", result);
+                File.WriteAllText($"{OutputDir}/GeneratedResultTypes.cs", resultTypes);
 
-                result = await engine.CompileRenderAsync("client.cshtml", new
+                string queryTypes = await engine.CompileRenderAsync("queryTypes.cshtml", new
+                {
+                    Namespace = Namespace,
+                    SchemaFile = Source,
+                    Types = allTypes,
+                    Mutation = typeInfo.Mutation,
+                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping}"
+                });
+                Directory.CreateDirectory(OutputDir);
+                File.WriteAllText($"{OutputDir}/GeneratedQueryTypes.cs", queryTypes);
+
+                resultTypes = await engine.CompileRenderAsync("client.cshtml", new
                 {
                     Namespace = Namespace,
                     SchemaFile = Source,
@@ -127,7 +138,7 @@ namespace dotnet_gqlgen
                     ClientClassName = ClientClassName,
                     Mappings = dotnetToGqlTypeMappings
                 });
-                File.WriteAllText($"{OutputDir}/{ClientClassName}.cs", result);
+                File.WriteAllText($"{OutputDir}/{ClientClassName}.cs", resultTypes);
 
                 Console.WriteLine($"Done.");
             }
@@ -138,9 +149,9 @@ namespace dotnet_gqlgen
         }
 
         /// <summary>
-        /// Splits an argument value like "value1=v1,value2=v2" into a dictionary.
+        /// Splits an argument value like "value1=v1;value2=v2" into a dictionary.
         /// </summary>
-        /// <remarks>Very simple splitter. Eg can't handle comma's or equal signs in values</remarks>
+        /// <remarks>Very simple splitter. Eg can't handle semi-colon's or equal signs in values</remarks>
         private Dictionary<string, string> SplitMultiValueArgument(string arg)
         {
             if (string.IsNullOrEmpty(arg))
@@ -149,7 +160,7 @@ namespace dotnet_gqlgen
             }
 
             return arg
-                .Split(',')
+                .Split(';')
                 .Select(h => h.Split('='))
                 .Where(hs => hs.Length >= 2)
                 .ToDictionary(key => key[0], value => value[1]);

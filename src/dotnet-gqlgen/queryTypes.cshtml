@@ -1,0 +1,47 @@
+@{
+    DisableEncoding = true;
+}
+@using dotnet_gqlgen;
+
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using DotNetGqlClient;
+
+/// <summary>
+/// Generated classes used for making GraphQL API calls with a typed interface.
+///
+/// Generated on @DateTime.Now from @Model.SchemaFile @Model.CmdArgs
+/// </summary>
+
+namespace @Model.Namespace
+{
+
+@foreach(var gqlType in Model.Types.Values)
+{
+    if (!string.IsNullOrEmpty(gqlType.Description))
+    {
+    @:/// <summary>
+    @gqlType.DescriptionForComment(4)
+    @:/// </summary>
+    }
+    @:public abstract class @gqlType.QueryName : @gqlType.Name
+    @:{
+@foreach(var field in gqlType.Fields)
+{
+    @if (!field.ShouldBeProperty && !gqlType.IsInput)
+    {
+        var shortcutOutput = field.OutputMethodSignature(true, false);
+
+        @if (gqlType != Model.Mutation && shortcutOutput != null)
+        {
+        @field.OutputMethodSignature(true, false)
+        }
+
+        @field.OutputMethodSignature(false, true)
+    }
+}
+    @:}
+}
+
+}

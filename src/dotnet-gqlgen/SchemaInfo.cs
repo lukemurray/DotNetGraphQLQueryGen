@@ -106,6 +106,7 @@ namespace dotnet_gqlgen
 
         public List<Field> Fields { get; }
         public string Name { get; }
+        public string QueryName => $"Query{Name}";
         public string Description { get; }
         public string DescriptionForComment(int indent = 8)
         {
@@ -188,7 +189,7 @@ namespace dotnet_gqlgen
 
             var typeName = !withSelection ? DotNetTypeSingle : "TReturn";
 
-            var sb = new StringBuilder("        ");
+            var sb = new StringBuilder("        public abstract ");
             sb.Append(IsScalar ? $"{DotNetType} " : IsArray ? $"List<{typeName}> " : $"{typeName} ");
             sb.Append(DotNetName).Append(IsScalar || !withSelection ? "(" : $"<{typeName}>(");
             var argsOut = ArgsOutput(onlyRequiredArgs);
@@ -197,7 +198,7 @@ namespace dotnet_gqlgen
             {
                 if (argsOut.Length > 0)
                     sb.Append(", ");
-                sb.Append($"Expression<Func<{DotNetTypeSingle}, TReturn>> selection");
+                sb.Append($"Expression<Func<Query{DotNetTypeSingle}, TReturn>> selection");
             }
             sb.Insert(0, BuildCommentDoc(withSelection));
 

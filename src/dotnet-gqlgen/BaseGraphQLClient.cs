@@ -163,7 +163,7 @@ namespace DotNetGqlClient
                         continue;
 
                     argVals.Add($"{param.Name}: {ArgValToString(operationArgs, variables, param, argType, argVal)}");
-                };
+                }
 
                 if (argVals.Count > 0)
                     select.Append($"({string.Join(", ", argVals)})");

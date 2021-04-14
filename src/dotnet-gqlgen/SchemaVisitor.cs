@@ -48,7 +48,7 @@ namespace dotnet_gqlgen
                     var arrayType = arg.dataType().arrayType?.GetText();
                     args.Add(new Arg(this.schemaInfo)
                     {
-                        Name = arg.id().GetText(),
+                        Name = arg.idKeyword().GetText(),
                         TypeName = arrayType ?? type,
                         Required = (arg.dataType().arrayRequired ?? arg.dataType().required) != null,
                         IsArray = arrayType != null

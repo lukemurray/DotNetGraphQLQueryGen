@@ -165,11 +165,13 @@ var client = new GraphQLClient(new Uri("gql", UriKind.Relative), httpClient);
 ```
 
 To use the GraphQLClient, copy the following files into your project:
-1. GraphQLClient.cs
-2. GeneratedTypes.cs
-3. BaseGraphQLClient.cs
-4. GqlFieldNameAttribute.cs
+1. GraphQLClient.cs - a simple client you can modify
+2. GeneratedResultTypes.cs - generated types from the schema
+2. GeneratedQueryTypes.cs - extensions to allow the linq style querying
+3. BaseGraphQLClient.cs - a base client that GraphQLClient inherits from
+4. GqlFieldNameAttribute.cs - required by the generated code
 
+Ideally move this to a dependency style library and tool in the future.
 
 ## Request Methods
 
@@ -241,4 +243,4 @@ The above has `mutationResult` strongly typed. E.g. `mutationResult.Data.NewPers
 
 ## Input types
 
-Any input types are generated as actual `class`es as the are used as arguments. The `-m Date=DateTime` tells the tool that the `scalar` type `Date` should be the `DateTime` type in C#. You can use this to support any other custom `scalar` types. E.g. `-m Date=DateTime,Point=PointF`, just comma separate a `GqlScalar=DotnetType` list.
+Any input types are generated as actual `class`es as the are used as arguments. The `-m Date=DateTime` tells the tool that the `scalar` type `Date` should be the `DateTime` type in C#. You can use this to support any other custom `scalar` types. E.g. `-m Date=DateTime;Point=PointF`, just comma separate a `GqlScalar=DotnetType` list.

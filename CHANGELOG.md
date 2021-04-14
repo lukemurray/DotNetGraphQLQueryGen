@@ -1,3 +1,9 @@
+# 0.4.0
+- Fix issue with GQL field names that are a single character
+- Generate classes for the schema types so if you select the full type we can create the classes
+- Split the Query methods into separate generated class from the schema type classes
+- Breaking - when supplying `--scalar_mapping`/`-m` arg, types are now split by `;`
+
 # 0.3.0
 - Support generating from the GraphQL endpoint with schema introspection query or from a JSON saved result of the query
 - Better support for fields that return a scalar but have arguments - no selection argument generated

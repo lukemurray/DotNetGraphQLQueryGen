@@ -9,7 +9,8 @@ using System.Linq.Expressions;
 using DotNetGqlClient;
 
 /// <summary>
-/// Generated interfaces for making GraphQL API calls with a typed interface.
+/// Generated classes used for making GraphQL API calls with a typed interface.
+/// Also used as result classes with the shortcut select all field methods
 ///
 /// Generated on @DateTime.Now from @Model.SchemaFile @Model.CmdArgs
 /// </summary>
@@ -36,14 +37,7 @@ namespace @Model.Namespace
     @gqlType.DescriptionForComment(4)
     @:/// </summary>
     }
-    if (gqlType.IsInput)
-    {
     @:public class @gqlType.Name
-    }
-    else
-    {
-    @:public interface @gqlType.Name
-    }
     @:{
 @foreach(var field in gqlType.Fields)
 {
@@ -56,25 +50,7 @@ namespace @Model.Namespace
         @:/// </summary>
         }
         @:[GqlFieldName("@field.Name")]
-        if (gqlType.IsInput)
-        {
         @:public @field.DotNetType @field.DotNetName { get; set; }
-        }
-        else
-        {
-        @:@field.DotNetType @field.DotNetName { get; }
-        }
-    }
-    else
-    {
-        var shortcutOutput = field.OutputMethodSignature(true, false);
-
-        @if (gqlType != Model.Mutation && shortcutOutput != null)
-        {
-        @field.OutputMethodSignature(true, false)
-        }
-
-        @field.OutputMethodSignature(false, true)
     }
 }
     @:}
