@@ -136,7 +136,8 @@ namespace dotnet_gqlgen
                     Query = typeInfo.Query,
                     Mutation = typeInfo.Mutation,
                     ClientClassName = ClientClassName,
-                    Mappings = dotnetToGqlTypeMappings
+                    Mappings = dotnetToGqlTypeMappings,
+                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping}"
                 });
                 File.WriteAllText($"{OutputDir}/{ClientClassName}.cs", resultTypes);
 
