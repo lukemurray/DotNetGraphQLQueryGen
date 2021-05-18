@@ -22,6 +22,10 @@
     <EmbeddedResource Include="client.cshtml" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <DefaultItemExcludes>$(DefaultItemExcludes);output\**\*</DefaultItemExcludes>
+  </PropertyGroup>
+
   <ItemGroup>
     <Antlr4 Update="GraphQLSchema.g4">
       <Generator>MSBuild:Compile</Generator>
