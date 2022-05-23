@@ -1,3 +1,7 @@
+# 0.5.0
+- Use an operation name in the built request to help with logging
+- Add overrides for naming your operation in `QueryAysnc`/`MutateAsync`
+
 # 0.4.0
 - Fix issue with GQL field names that are a single character
 - Generate classes for the schema types so if you select the full type we can create the classes

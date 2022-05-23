@@ -16,7 +16,7 @@ namespace DotNetGqlClient
 
         private class MemberInitDictionary : Dictionary<string, (object, Type)> { }
 
-        protected QueryRequest MakeQuery<TSchema, TQuery>(Expression<Func<TSchema, TQuery>> query, bool mutation = false)
+        protected QueryRequest MakeQuery<TSchema, TQuery>(Expression<Func<TSchema, TQuery>> query, string operationName = null, bool mutation = false)
         {
             argNum = 0;
             var args = new List<string>();
@@ -36,13 +36,15 @@ namespace DotNetGqlClient
             }
 
             // prepend operationname as it may have arguments
-            gql.Insert(0, $"{(mutation ? "mutation" : "query")} BaseGraphQLClient{(args.Any() ? $"({string.Join(",", args)})" : "")} {{\n");
+            operationName = string.IsNullOrEmpty(operationName) ? "GraphQLClient" : operationName;
+            gql.Insert(0, $"{(mutation ? "mutation" : "query")} {operationName} {(args.Any() ? $"({string.Join(",", args)})" : "")} {{\n");
 
             gql.Append(@"}");
             return new QueryRequest
             {
                 Query = gql.ToString(),
-                Variables = variables
+                Variables = variables,
+                OperationName = operationName,
             };
         }
 

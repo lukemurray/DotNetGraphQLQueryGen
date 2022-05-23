@@ -164,8 +164,8 @@ httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("
 var client = new GraphQLClient(new Uri("gql", UriKind.Relative), httpClient);
 ```
 
-To use the GraphQLClient, copy the following files into your project:
-1. GraphQLClient.cs - a simple client you can modify
+To use the GraphQLClient, copy the following files into your project. These will all be in the output folder:
+1. GraphQLClient.cs - a simple client you can modify or extend
 2. GeneratedResultTypes.cs - generated types from the schema
 2. GeneratedQueryTypes.cs - extensions to allow the linq style querying
 3. BaseGraphQLClient.cs - a base client that GraphQLClient inherits from

@@ -141,6 +141,9 @@ namespace dotnet_gqlgen
                 });
                 File.WriteAllText($"{OutputDir}/{ClientClassName}.cs", resultTypes);
 
+                File.Copy("BaseGraphQLClient.cs", $"{OutputDir}/BaseGraphQLClient.cs", true);
+                File.Copy("GqlFieldNameAttribute.cs", $"{OutputDir}/GqlFieldNameAttribute.cs", true);
+
                 Console.WriteLine($"Done.");
             }
             catch (Exception e)
