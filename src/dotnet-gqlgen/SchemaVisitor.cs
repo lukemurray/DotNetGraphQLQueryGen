@@ -139,7 +139,7 @@ namespace dotnet_gqlgen
                 if (schemaInfo.Types.ContainsKey(context.typeName.GetText()))
                     schemaInfo.Types[context.typeName.GetText()].Fields.AddRange(fields);
                 else
-                    schemaInfo.Types.Add(context.typeName.GetText(), new TypeInfo(fields, context.typeName.GetText(), desc, true));
+                    schemaInfo.Types.Add(context.typeName.GetText(), new TypeInfo(fields, context.typeName.GetText(), desc, false, true));
                 return result;
             }
         }

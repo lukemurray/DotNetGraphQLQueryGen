@@ -5,8 +5,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using DotNetGqlClient;
+@Model.Usings
 
 /// <summary>
 /// Generated classes used for making GraphQL API calls with a typed interface.
@@ -37,6 +37,7 @@ namespace @Model.Namespace
     @gqlType.DescriptionForComment(4)
     @:/// </summary>
     }
+    @* We make interfaces as classes for now *@
     @:public class @gqlType.Name
     @:{
 @foreach(var field in gqlType.Fields)

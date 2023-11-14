@@ -102,6 +102,7 @@ namespace dotnet_gqlgen
             Name = name;
             Description = description;
             IsInput = isInput;
+            IsInterface = isInterface;
         }
 
         public List<Field> Fields { get; }
@@ -114,6 +115,7 @@ namespace dotnet_gqlgen
         }
 
         public bool IsInput { get; }
+        public bool IsInterface { get; }
     }
 
     public class Field

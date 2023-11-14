@@ -30,6 +30,8 @@ namespace dotnet_gqlgen
         public string ScalarMapping { get; }
         [Option(LongName = "output", ShortName = "o", Description = "Output directory")]
         public string OutputDir { get; } = "output";
+        [Option(LongName = "usings", ShortName = "u", Description = "Extra using statements to add to generated code.")]
+        public string Usings { get; } = "";
 
         public Dictionary<string, string> dotnetToGqlTypeMappings = new Dictionary<string, string> {
             {"string", "String"},
@@ -113,7 +115,8 @@ namespace dotnet_gqlgen
                     Types = allTypes,
                     Enums = typeInfo.Enums,
                     Mutation = typeInfo.Mutation,
-                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping}"
+                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping}",
+                    Usings = Usings
                 });
                 Directory.CreateDirectory(OutputDir);
                 File.WriteAllText($"{OutputDir}/GeneratedResultTypes.cs", resultTypes);
@@ -124,7 +127,8 @@ namespace dotnet_gqlgen
                     SchemaFile = Source,
                     Types = allTypes,
                     Mutation = typeInfo.Mutation,
-                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping}"
+                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping}",
+                    Usings = Usings
                 });
                 Directory.CreateDirectory(OutputDir);
                 File.WriteAllText($"{OutputDir}/GeneratedQueryTypes.cs", queryTypes);
