@@ -115,7 +115,7 @@ namespace dotnet_gqlgen
                     Types = allTypes,
                     Enums = typeInfo.Enums,
                     Mutation = typeInfo.Mutation,
-                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping} -u {Usings}",
+                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping} -u {Usings.Replace("\n", "\\n")}",
                     Usings = Usings
                 });
                 Directory.CreateDirectory(OutputDir);
@@ -127,7 +127,7 @@ namespace dotnet_gqlgen
                     SchemaFile = Source,
                     Types = allTypes,
                     Mutation = typeInfo.Mutation,
-                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping} -u {Usings}",
+                    CmdArgs = $"-n {Namespace} -c {ClientClassName} -m {ScalarMapping} -u {Usings.Replace("\n", "\\n")}",
                     Usings = Usings
                 });
                 Directory.CreateDirectory(OutputDir);
