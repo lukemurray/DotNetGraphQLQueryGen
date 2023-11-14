@@ -126,6 +126,23 @@ namespace dotnet_gqlgen
                 return result;
             }
         }
+        public override object VisitInterfaceDef(GraphQLSchemaParser.InterfaceDefContext context)
+        {
+            var docComment = context.comment().LastOrDefault();
+            var desc = docComment != null ? (string)VisitComment(docComment) : null;
+
+            var fields = new List<Field>();
+            using (new FieldConsumer(this, fields))
+            {
+                var result = base.Visit(context.objectDef());
+                // you can extend type to add fields to it so the type might already be in the schema
+                if (schemaInfo.Types.ContainsKey(context.typeName.GetText()))
+                    schemaInfo.Types[context.typeName.GetText()].Fields.AddRange(fields);
+                else
+                    schemaInfo.Types.Add(context.typeName.GetText(), new TypeInfo(fields, context.typeName.GetText(), desc, true));
+                return result;
+            }
+        }
         public override object VisitScalarDef(GraphQLSchemaParser.ScalarDefContext context)
         {
             var result = base.VisitScalarDef(context);

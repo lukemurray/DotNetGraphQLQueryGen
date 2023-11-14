@@ -96,7 +96,7 @@ namespace dotnet_gqlgen
 
     public class TypeInfo
     {
-        public TypeInfo(IEnumerable<Field> fields, string name, string description, bool isInput = false)
+        public TypeInfo(IEnumerable<Field> fields, string name, string description, bool isInput = false, bool isInterface = false)
         {
             Fields = fields.ToList();
             Name = name;
@@ -162,6 +162,8 @@ namespace dotnet_gqlgen
             {
                 if (!schemaInfo.HasDotNetType(TypeName))
                 {
+                    if (schemaInfo.Scalars.Contains(TypeName))
+                        return TypeName;
                     throw new SchemaException($"Unknown dotnet type for schema type '{TypeName}'. Please provide a mapping for any custom scalar types defined in the schema");
                 }
                 return schemaInfo.GetDotNetType(TypeName);

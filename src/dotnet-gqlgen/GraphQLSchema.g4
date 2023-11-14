@@ -23,13 +23,16 @@ string      : '"' ( '"' | ~('\n'|'\r') | STRING_CHARS )*? '"';
 constant    : string | int | decimal | boolean | idKeyword; // id should be an enum
 
 // This is our expression language
-schema      : (schemaDef | typeDef | scalarDef | inputDef | enumDef)+;
+schema      : (schemaDef | typeDef | scalarDef | inputDef | enumDef | directiveDef | interfaceDef)+;
 
 schemaDef   : comment* SCHEMA ws* objectDef;
-typeDef     : comment* (EXTEND ws+)? TYPE ws+ typeName=idKeyword ws* objectDef;
+typeDef     : comment* (EXTEND ws+)? TYPE ws+ typeName=idKeyword (ws+ 'implements' ws+ interfaceName=idKeyword)? ws* objectDef;
+interfaceDef: comment* 'interface' ws+ typeName=idKeyword ws* objectDef;
 scalarDef   : comment* SCALAR ws+ typeName=idKeyword ws+;
 inputDef    : comment* INPUT ws+ typeName=idKeyword ws* '{' ws* inputFields ws* comment* ws* '}' ws*;
 enumDef     : comment* ENUM ws+ typeName=idKeyword ws* '{' (ws* enumItem ws* comment* ws*)+ '}' ws*;
+directiveTarget: 'FIELD' | 'FRAGMENT_SPREAD' | 'INLINE_FRAGMENT';
+directiveDef: 'directive' ws+ '@' name=idKeyword ('(' args=arguments ')')? ws+ 'on' ws+ (directiveTarget (ws+ '|' ws+ directiveTarget)*) ws*;
 
 inputFields : fieldDef (ws* '=' ws* constant)? (ws* ',')? (ws* fieldDef (ws* '=' ws* constant)? (ws* ',')?)* ws*;
 objectDef   : '{' ws* fieldDef (ws* ',')? (ws* fieldDef (ws* ',')?)* ws* comment* ws* '}' ws*;
