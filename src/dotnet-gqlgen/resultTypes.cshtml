@@ -1,6 +1,7 @@
 @{
     DisableEncoding = true;
 }
+@using System.IO
 @using dotnet_gqlgen;
 
 using System;
@@ -11,8 +12,11 @@ using DotNetGqlClient;
 /// <summary>
 /// Generated classes used for making GraphQL API calls with a typed interface.
 /// Also used as result classes with the shortcut select all field methods
-///
-/// Generated on @DateTime.Now from @Model.SchemaFile @Model.CmdArgs
+@if (!Model.NoGeneratedTimestamp)
+{
+@:///
+@:/// Generated on @DateTime.UtcNow from @Model.SchemaFile @Model.CmdArgs    
+}
 /// </summary>
 
 namespace @Model.Namespace
