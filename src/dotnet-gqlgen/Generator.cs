@@ -158,7 +158,6 @@ namespace dotnet_gqlgen
         private static async Task WriteResourceToFile(Type rootType, string resourceName, string outputLocation, bool convertToUnixLineEnding) 
         {
             var assembly = rootType.GetTypeInfo().Assembly;
-            await using var fileStream = File.Open(outputLocation, FileMode.Create);
             await using var resourceStream = assembly.GetManifestResourceStream($"{rootType.Namespace}.{resourceName}")!;
             using var streamReader = new StreamReader(resourceStream);
 

@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>dotnet_gqlgen</RootNamespace>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <PackageVersion>0.6.3</PackageVersion>
+    <PackageVersion>0.6.4</PackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>
