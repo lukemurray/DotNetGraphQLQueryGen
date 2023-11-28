@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>Tests for dotnet-gqlgen</Description>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IsPackable>false</IsPackable>
   </PropertyGroup>

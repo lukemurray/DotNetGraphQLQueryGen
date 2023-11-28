@@ -83,7 +83,7 @@ namespace Generated
 
         public async Task<GqlResult<TQuery>> MutateAsync<TQuery>(Expression<Func<Mutation, TQuery>> query)
         {
-            var gql = base.MakeQuery<Mutation, TQuery>(query, true);
+            var gql = base.MakeQuery<Mutation, TQuery>(query, "TestMutation", true);
             return await ProcessResult<TQuery>(gql);
         }
     }

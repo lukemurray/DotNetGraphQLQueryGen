@@ -13,11 +13,11 @@ namespace CoreData.Model.Tests
     {
         internal QueryRequest MakeQuery<TReturn>(Expression<Func<RootQuery, TReturn>> p, bool mutation = false)
         {
-            return base.MakeQuery(p, mutation);
+            return base.MakeQuery(p, "TestQuery", mutation);
         }
         internal QueryRequest MakeMutation<TReturn>(Expression<Func<Mutation, TReturn>> p, bool mutation = false)
         {
-            return base.MakeQuery(p, mutation);
+            return base.MakeQuery(p, "TestQuery", mutation);
         }
     }
 
@@ -36,7 +36,7 @@ namespace CoreData.Model.Tests
                     s.Id,
                 }),
             });
-            Assert.Equal($@"query BaseGraphQLClient {{
+            Assert.Equal($@"query TestQuery  {{
 Movies: movies {{
 Id: id
 }}
@@ -53,7 +53,7 @@ Id: id
                     DirectorOf = s.DirectorOf(),
                 }),
             });
-            Assert.Equal($@"query BaseGraphQLClient {{
+            Assert.Equal($@"query TestQuery  {{
 Actors: actors {{
 Id: id
 DirectorOf: directorOf {{
@@ -76,7 +76,7 @@ Type: type
             var query = client.MakeQuery(_ => new {
                 displayName = _.GetDisplayName(1)
             });
-            Assert.Equal($@"query BaseGraphQLClient {{
+            Assert.Equal($@"query TestQuery  {{
 displayName: getDisplayName(id: 1)
 }}", query.Query, ignoreLineEndingDifferences: true);
         }
@@ -93,7 +93,7 @@ displayName: getDisplayName(id: 1)
                     Id = s.Id,
                 }),
             });
-            Assert.Equal($@"query BaseGraphQLClient {{
+            Assert.Equal($@"query TestQuery  {{
 Movies: movies {{
 Id: id
 }}
@@ -111,7 +111,7 @@ Id: id
                     s.Id,
                 }),
             }, true);
-            Assert.Equal($@"mutation BaseGraphQLClient {{
+            Assert.Equal($@"mutation TestQuery  {{
 Movie: addMovie(name: ""movie"", rating: 5.5, released: ""2019-10-30T17:55:23.0000000"") {{
 Id: id
 }}
@@ -130,7 +130,7 @@ Id: id
                     s.Id,
                 }),
             });
-            Assert.Equal($@"query BaseGraphQLClient($a0: [Int]) {{
+            Assert.Equal($@"query TestQuery ($a0: [Int]) {{
 Movies: moviesByIds(ids: $a0) {{
 Id: id
 }}
@@ -150,7 +150,7 @@ Id: id
                     s.Id,
                 }),
             });
-            Assert.Equal($@"query BaseGraphQLClient($a0: [Int]) {{
+            Assert.Equal($@"query TestQuery ($a0: [Int]) {{
 Movies: moviesByIds(ids: $a0) {{
 Id: id
 }}
@@ -171,7 +171,7 @@ Id: id
                     s.LastName
                 }),
             });
-            Assert.Equal($@"query BaseGraphQLClient {{
+            Assert.Equal($@"query TestQuery  {{
 Producers: producers(filter: {{ field: ""lastName"", value: ""Lucas"" }}) {{
 Id: id
 LastName: lastName
