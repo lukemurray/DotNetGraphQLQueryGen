@@ -31,6 +31,9 @@ namespace dotnet_gqlgen
         
         [Option(LongName = "no_generated_timestamp", ShortName = "nt", Description = "Don't add 'Generated on abc from xyz' in generated files")]
         public bool NoGeneratedTimestamp { get; }
+        
+        [Option(LongName = "unix", ShortName = "un", Description = "Convert windows endings to unix")]
+        public bool ConvertToUnixLineEnding { get; }
 
         public static Task<int> Main(string[] args) => CommandLineApplication.ExecuteAsync<Program>(args);
 
@@ -47,7 +50,8 @@ namespace dotnet_gqlgen
                     ScalarMapping = ScalarMapping,
                     OutputDir = OutputDir,
                     Usings = Usings,
-                    NoGeneratedTimestamp = NoGeneratedTimestamp
+                    NoGeneratedTimestamp = NoGeneratedTimestamp,
+                    ConvertToUnixLineEnding = ConvertToUnixLineEnding
                 });
             }
             catch (Exception e)

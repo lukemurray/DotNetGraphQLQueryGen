@@ -21,6 +21,7 @@ namespace dotnet_gqlgen
         public string OutputDir { get; set; } = "output";
         public string Usings { get; set; } = "";
         public bool NoGeneratedTimestamp { get; set; }
+        public bool ConvertToUnixLineEnding { get; set; } = true;
     }
 
     public static class Generator
@@ -112,7 +113,7 @@ namespace dotnet_gqlgen
                 options.NoGeneratedTimestamp
             });
             Directory.CreateDirectory(options.OutputDir);
-            await File.WriteAllTextAsync($"{options.OutputDir}/GeneratedResultTypes.cs", resultTypes);
+            await NormalizeAndWriteIfChanged($"{options.OutputDir}/GeneratedResultTypes.cs", resultTypes, options.ConvertToUnixLineEnding);
 
             string queryTypes = await engine.CompileRenderAsync("queryTypes.cshtml", new
             {
@@ -125,7 +126,7 @@ namespace dotnet_gqlgen
                 options.NoGeneratedTimestamp
             });
             Directory.CreateDirectory(options.OutputDir);
-            await File.WriteAllTextAsync($"{options.OutputDir}/GeneratedQueryTypes.cs", queryTypes);
+            await NormalizeAndWriteIfChanged($"{options.OutputDir}/GeneratedQueryTypes.cs", queryTypes, options.ConvertToUnixLineEnding);
 
             resultTypes = await engine.CompileRenderAsync("client.cshtml", new
             {
@@ -138,20 +139,30 @@ namespace dotnet_gqlgen
                 CmdArgs = $"-n {options.Namespace} -c {options.ClientClassName} -m {options.ScalarMapping}",
                 options.NoGeneratedTimestamp
             });
-            await File.WriteAllTextAsync($"{options.OutputDir}/{options.ClientClassName}.cs", resultTypes);
+            await NormalizeAndWriteIfChanged($"{options.OutputDir}/{options.ClientClassName}.cs", resultTypes, options.ConvertToUnixLineEnding);
 
-            await WriteResourceToFile(rootType, "BaseGraphQLClient.cs", $"{options.OutputDir}/BaseGraphQLClient.cs");
-            await WriteResourceToFile(rootType, "GqlFieldNameAttribute.cs", $"{options.OutputDir}/GqlFieldNameAttribute.cs");
+            await WriteResourceToFile(rootType, "BaseGraphQLClient.cs", $"{options.OutputDir}/BaseGraphQLClient.cs", options.ConvertToUnixLineEnding);
+            await WriteResourceToFile(rootType, "GqlFieldNameAttribute.cs", $"{options.OutputDir}/GqlFieldNameAttribute.cs", options.ConvertToUnixLineEnding);
             
             Console.WriteLine($"Done.");
         }
+
+        private static async Task NormalizeAndWriteIfChanged(string file, string text, bool convertToUnixLineEnding)
+        {
+            var normalizedText = convertToUnixLineEnding ? text.Replace("\r\n", "\n") : text;
+            if (File.Exists(file) && string.Equals(await File.ReadAllTextAsync(file), normalizedText)) return;
+            
+            await File.WriteAllTextAsync(file, normalizedText);
+        }
         
-        private static async Task WriteResourceToFile(Type rootType, string resourceName, string outputLocation) 
+        private static async Task WriteResourceToFile(Type rootType, string resourceName, string outputLocation, bool convertToUnixLineEnding) 
         {
             var assembly = rootType.GetTypeInfo().Assembly;
-            await using var fileStream = File.Open(outputLocation, FileMode.Create);
             await using var resourceStream = assembly.GetManifestResourceStream($"{rootType.Namespace}.{resourceName}")!;
-            await resourceStream.CopyToAsync(fileStream);
+            using var streamReader = new StreamReader(resourceStream);
+
+            var text = await streamReader.ReadToEndAsync();
+            await NormalizeAndWriteIfChanged(outputLocation, text, convertToUnixLineEnding);
         }
 
         /// <summary>
