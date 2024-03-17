@@ -3,6 +3,7 @@ schema {
     mutation: Mutation
 }
 
+""" comment """
 scalar Date
 
 enum Sex {
@@ -127,3 +128,6 @@ type Mutation {
 	# Not required for now
   	#removePerson(id: Int!): Int
 }
+
+"""comments"""
+directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT

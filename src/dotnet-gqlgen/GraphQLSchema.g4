@@ -32,7 +32,7 @@ scalarDef   : comment* SCALAR ws+ typeName=idKeyword ws+;
 inputDef    : comment* INPUT ws+ typeName=idKeyword ws* '{' ws* inputFields ws* comment* ws* '}' ws*;
 enumDef     : comment* ENUM ws+ typeName=idKeyword ws* '{' (ws* enumItem ws* comment* ws*)+ '}' ws*;
 directiveTarget: 'FIELD' | 'FRAGMENT_SPREAD' | 'INLINE_FRAGMENT';
-directiveDef: 'directive' ws+ '@' name=idKeyword ('(' args=arguments ')')? ws+ 'on' ws+ (directiveTarget (ws+ '|' ws+ directiveTarget)*) ws*;
+directiveDef: comment* 'directive' ws+ '@' name=idKeyword ('(' args=arguments ')')? ws+ 'on' ws+ (directiveTarget (ws+ '|' ws+ directiveTarget)*) ws*;
 
 inputFields : fieldDef (ws* '=' ws* constant)? (ws* ',')? (ws* fieldDef (ws* '=' ws* constant)? (ws* ',')?)* ws*;
 objectDef   : '{' ws* fieldDef (ws* ',')? (ws* fieldDef (ws* ',')?)* ws* comment* ws* '}' ws*;
