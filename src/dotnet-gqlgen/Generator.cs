@@ -23,6 +23,18 @@ namespace dotnet_gqlgen
         public bool NoGeneratedTimestamp { get; set; }
         public bool ConvertToUnixLineEnding { get; set; } = true;
     }
+        
+    public class ModelType
+    {
+        public string Namespace { get; set; }
+        public string SchemaFile { get; set; }
+        public Dictionary<string, TypeInfo> Types { get; set; }
+        public Dictionary<string, List<EnumInfo>> Enums { get; set; }
+        public TypeInfo Mutation { get; set; }
+        public string CmdArgs { get; set; }
+        public string Usings { get; set; }
+        public bool NoGeneratedTimestamp { get; set; }
+    }
 
     public static class Generator
     {
@@ -101,7 +113,7 @@ namespace dotnet_gqlgen
 
             var allTypes = typeInfo.Types.Concat(typeInfo.Inputs).ToDictionary(k => k.Key, v => v.Value);
 
-            string resultTypes = await engine.CompileRenderAsync("resultTypes.cshtml", new
+            string resultTypes = await engine.CompileRenderAsync("resultTypes.cshtml", new ModelType
             {
                 Namespace = options.Namespace,
                 SchemaFile = options.Source,
@@ -110,12 +122,12 @@ namespace dotnet_gqlgen
                 Mutation = typeInfo.Mutation,
                 CmdArgs = $"-n {options.Namespace} -c {options.ClientClassName} -m {options.ScalarMapping} -u {options.Usings.Replace("\n", "\\n")}",
                 Usings = options.Usings,
-                options.NoGeneratedTimestamp
+                NoGeneratedTimestamp = options.NoGeneratedTimestamp
             });
             Directory.CreateDirectory(options.OutputDir);
             await NormalizeAndWriteIfChanged($"{options.OutputDir}/GeneratedResultTypes.cs", resultTypes, options.ConvertToUnixLineEnding);
 
-            string queryTypes = await engine.CompileRenderAsync("queryTypes.cshtml", new
+            string queryTypes = await engine.CompileRenderAsync("queryTypes.cshtml", new ModelType
             {
                 Namespace = options.Namespace,
                 SchemaFile = options.Source,
@@ -123,7 +135,7 @@ namespace dotnet_gqlgen
                 Mutation = typeInfo.Mutation,
                 CmdArgs = $"-n {options.Namespace} -c {options.ClientClassName} -m {options.ScalarMapping} -u {options.Usings.Replace("\n", "\\n")}",
                 Usings = options.Usings,
-                options.NoGeneratedTimestamp
+                NoGeneratedTimestamp = options.NoGeneratedTimestamp
             });
             Directory.CreateDirectory(options.OutputDir);
             await NormalizeAndWriteIfChanged($"{options.OutputDir}/GeneratedQueryTypes.cs", queryTypes, options.ConvertToUnixLineEnding);

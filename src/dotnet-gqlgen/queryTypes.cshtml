@@ -1,6 +1,7 @@
 @{
     DisableEncoding = true;
 }
+@model ModelType
 @using System.IO
 @using dotnet_gqlgen;
 
@@ -22,7 +23,7 @@ using DotNetGqlClient;
 namespace @Model.Namespace
 {
 
-@foreach(var gqlType in Model.Types.Values)
+@foreach(var gqlType in Model.Types.Values.OrderBy(t => t.QueryName, StringComparer.Ordinal))
 {
     if (!string.IsNullOrEmpty(gqlType.Description))
     {
@@ -33,7 +34,7 @@ namespace @Model.Namespace
     
     @:public abstract class @gqlType.QueryName : @gqlType.Name
     @:{
-@foreach(var field in gqlType.Fields)
+@foreach(var field in gqlType.Fields.OrderBy(f => f.Name, StringComparer.Ordinal))
 {
     @if (!field.ShouldBeProperty && !gqlType.IsInput)
     {
