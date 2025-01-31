@@ -1,6 +1,7 @@
 @{
     DisableEncoding = true;
 }
+@model ModelType
 @using System.IO
 @using dotnet_gqlgen;
 
@@ -22,10 +23,10 @@ using DotNetGqlClient;
 namespace @Model.Namespace
 {
 
-@foreach(var kvp in Model.Enums)
+@foreach(var kvp in Model.Enums.OrderBy(e => e.Key, StringComparer.Ordinal))
 {
     @:public enum @kvp.Key {
-    @foreach(var field in kvp.Value)
+    @foreach(var field in kvp.Value.OrderBy(t => t.Name, StringComparer.Ordinal))
     {
         @:[GqlFieldName("@field.Name")]
         @:@field.DotNetName,
@@ -33,7 +34,7 @@ namespace @Model.Namespace
     @:}
 }
 
-@foreach(var gqlType in Model.Types.Values)
+@foreach(var gqlType in Model.Types.Values.OrderBy(t => t.Name, StringComparer.Ordinal))
 {
     if (!string.IsNullOrEmpty(gqlType.Description))
     {
@@ -44,7 +45,7 @@ namespace @Model.Namespace
     @* We make interfaces as classes for now *@
     @:public class @gqlType.Name
     @:{
-@foreach(var field in gqlType.Fields)
+@foreach(var field in gqlType.Fields.OrderBy(f => f.Name, StringComparer.Ordinal))
 {
     @if (field.ShouldBeProperty || gqlType.IsInput)
     {
