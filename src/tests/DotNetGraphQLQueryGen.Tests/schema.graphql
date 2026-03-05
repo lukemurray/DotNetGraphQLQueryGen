@@ -67,6 +67,8 @@ type Movie {
 	rating: Float
 	"Just testing using gql schema keywords here"
 	type: Int
+	"External identifier by name"
+	externalId(name: String!): String
 }
 
 type Actor {

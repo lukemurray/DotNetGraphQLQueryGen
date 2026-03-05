@@ -172,13 +172,7 @@ namespace dotnet_gqlgen
             }
         }
 
-        public bool ShouldBeProperty
-        {
-            get
-            {
-                return (Args.Count == 0 && !schemaInfo.Types.ContainsKey(TypeName) && !schemaInfo.Inputs.ContainsKey(TypeName)) || schemaInfo.Scalars.Contains(TypeName);
-            }
-        }
+        public bool ShouldBeProperty => Args.Count == 0 && IsScalar;
 
         /// <summary>
         /// Outputs the method signature with all arguments and a object selection argument if applicable

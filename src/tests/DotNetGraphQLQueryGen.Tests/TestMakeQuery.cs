@@ -180,6 +180,22 @@ LastName: lastName
         }
 
         [Fact]
+        public void ScalarFieldWithArgOnEntityType()
+        {
+            var client = new TestClient();
+            var query = client.MakeQuery(q => new {
+                Movie = q.Movie(1, m => new {
+                    ExternalId = m.ExternalId("mySystem"),
+                }),
+            });
+            Assert.Equal($@"query TestQuery  {{
+Movie: movie(id: 1) {{
+ExternalId: externalId(name: ""mySystem"")
+}}
+}}", query.Query, ignoreLineEndingDifferences: true);
+        }
+
+        [Fact]
         public void TestErrorOnInvalidPropertySelection()
         {
             Assert.Throws<ArgumentException>(() => {

@@ -231,6 +231,11 @@ namespace Generated
         /// </summary>
         [GqlFieldName("type")]
         int? Type { get; }
+        /// <summary>
+        /// External identifier by name
+        /// </summary>
+        [GqlFieldName("externalId")]
+        string ExternalId(string name);
     }
     public interface Actor
     {

@@ -75,13 +75,21 @@ namespace DotNetGraphQLQueryGen.Tests
 
             var typeDef = results.Types["Movie"];
             Assert.Equal("This is a movie entity", typeDef.Description);
-            Assert.Equal(10, typeDef.Fields.Count);
+            Assert.Equal(11, typeDef.Fields.Count);
             Assert.Equal("id", typeDef.Fields.ElementAt(0).Name);
             Assert.Equal("String", typeDef.Fields.ElementAt(1).TypeName);
             Assert.False(typeDef.Fields.ElementAt(1).IsArray);
             Assert.Equal("actors", typeDef.Fields.ElementAt(4).Name);
             Assert.Equal("Person", typeDef.Fields.ElementAt(4).TypeName);
             Assert.True(typeDef.Fields.ElementAt(4).IsArray);
+
+            var externalIdField = typeDef.Fields.First(f => f.Name == "externalId");
+            Assert.Equal("String", externalIdField.TypeName);
+            Assert.Single(externalIdField.Args);
+            Assert.Equal("name", externalIdField.Args.First().Name);
+            Assert.True(externalIdField.Args.First().Required);
+            Assert.False(externalIdField.ShouldBeProperty);
+            Assert.True(externalIdField.IsScalar);
         }
     }
 }
