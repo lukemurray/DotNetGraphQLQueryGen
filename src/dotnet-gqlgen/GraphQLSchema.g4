@@ -20,7 +20,9 @@ int         : '-'? DIGIT+;
 decimal     : '-'? DIGIT+'.'DIGIT+;
 boolean     : TRUE | FALSE;
 string      : '"' ( '"' | ~('\n'|'\r') | STRING_CHARS )*? '"';
-constant    : string | int | decimal | boolean | idKeyword; // id should be an enum
+constant    : string | int | decimal | boolean | idKeyword | listConstant | objectConstant; // id should be an enum
+listConstant    : '[' ws* (constant (ws* ',')? ws*)* ']';
+objectConstant  : '{' ws* (idKeyword ws* ':' ws* constant (ws* ',')? ws*)* '}';
 
 // This is our expression language
 schema      : (schemaDef | typeDef | scalarDef | inputDef | enumDef | directiveDef | interfaceDef)+;

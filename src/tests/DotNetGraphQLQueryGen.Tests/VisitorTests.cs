@@ -37,6 +37,26 @@ namespace DotNetGraphQLQueryGen.Tests
         }
 
         [Fact]
+        public void TestListAndObjectDefaultValues()
+        {
+            // EntityGraphQL UseSort with a default sort emits a list of input objects as the argument default
+            var results = SchemaCompiler.Compile(@"schema { query: Query }
+enum SortDirectionEnum { ASC DESC }
+input AuditsSortInput { timestamp: SortDirectionEnum tags: [String] }
+type Query {
+    audits(name: String, sort: [AuditsSortInput!] = [{ timestamp: DESC }], take: Int): String
+    nested(sort: [AuditsSortInput!] = [{timestamp: ASC, tags: [""a"", ""b""]}, {}], ids: [Int] = []): String
+}
+");
+            var query = results.Types["Query"];
+            var audits = query.Fields.First(f => f.Name == "audits");
+            Assert.Equal(new[] { "name", "sort", "take" }, audits.Args.Select(a => a.Name));
+            Assert.True(audits.Args.ElementAt(1).IsArray);
+            Assert.Equal("AuditsSortInput", audits.Args.ElementAt(1).TypeName);
+            Assert.Equal(new[] { "sort", "ids" }, query.Fields.First(f => f.Name == "nested").Args.Select(a => a.Name));
+        }
+
+        [Fact]
         public void TestSchemaMutationType()
         {
             var results = SchemaCompiler.Compile(File.ReadAllText("../../../schema.graphql"));
